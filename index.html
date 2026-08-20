@@ -67,34 +67,38 @@
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
     }
 
-    .audio-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--surface-border);
-      color: var(--accent);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      cursor: pointer;
-      z-index: 20;
-      transition: all 0.3s ease;
-    }
-
-    .audio-btn.playing {
-      background: var(--accent-muted);
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--glow);
-    }
-
     .header {
       text-align: center;
       margin-bottom: 24px;
+      position: relative;
+    }
+
+    .subtitle-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .audio-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--surface-border);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .audio-pill.playing {
+      background: var(--accent-muted);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--glow);
     }
 
     .greeting {
@@ -103,7 +107,7 @@
       font-weight: 400;
       letter-spacing: -0.5px;
       color: var(--text);
-      margin-bottom: 6px;
+      margin-bottom: 2px;
       font-style: italic;
     }
 
@@ -371,16 +375,16 @@
 
   <div class="container" id="main-container">
     
-    <!-- Audio Control Button -->
-    <button class="audio-btn" id="audio-toggle" onclick="toggleAudio()" title="Toggle Ambient Audio">🎵</button>
-    <!-- Soft Piano Ambient Stream -->
-    <audio id="bg-audio" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a2b160.mp3?filename=relaxing-piano-10853.mp3"></audio>
-
     <!-- Welcome View -->
     <div id="welcome-view">
-      <div class="header" style="margin-bottom:16px;">
+      <div class="header">
         <div class="greeting" id="dynamic-greeting">Hi, Geni</div>
-        <div class="subtitle">August 24, 2026</div>
+        <div class="subtitle-wrapper">
+          <span class="subtitle">August 24, 2026</span>
+          <button class="audio-pill" id="audio-toggle" onclick="toggleAudio()" title="Toggle Ambient Audio">
+            <span id="audio-icon">🎵</span>
+          </button>
+        </div>
       </div>
       <div class="note-text">
         No special occasion. Just thought you should be celebrated everyday.
@@ -392,7 +396,9 @@
     <div id="app-flow" style="display: none;">
       <div class="header">
         <div class="greeting">Hi, Geni</div>
-        <div class="subtitle">August 24, 2026</div>
+        <div class="subtitle-wrapper">
+          <span class="subtitle">August 24, 2026</span>
+        </div>
       </div>
 
       <div class="steps-bar">
@@ -459,25 +465,68 @@
   <script>
     const MAIN_PHONE_NUMBER = "6281298811308";
 
-    // Audio Control
-    const bgAudio = document.getElementById('bg-audio');
-    const audioBtn = document.getElementById('audio-toggle');
+    // Web Audio Synthesizer (Native Ambient Piano Chords)
+    let audioCtx = null;
     let isPlayingAudio = false;
+    let synthTimer = null;
+
+    const chords = [
+      [293.66, 370.00, 440.00, 554.37], // Dmaj7
+      [246.94, 293.66, 370.00, 440.00], // Bm7
+      [164.81, 246.94, 293.66, 392.00], // Em7
+      [220.00, 277.18, 329.63, 392.00]  // A7
+    ];
+    let chordIdx = 0;
+
+    function playSoftChord() {
+      if (!isPlayingAudio || !audioCtx) return;
+      
+      const currentChord = chords[chordIdx % chords.length];
+      chordIdx++;
+
+      currentChord.forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.03, audioCtx.currentTime + 0.8);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 4.0);
+      });
+    }
 
     function toggleAudio() {
       triggerHaptic();
+      const audioBtn = document.getElementById('audio-toggle');
+      const audioIcon = document.getElementById('audio-icon');
+
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
       if (isPlayingAudio) {
-        bgAudio.pause();
-        audioBtn.classList.remove('playing');
-        audioBtn.innerText = '🎵';
         isPlayingAudio = false;
+        clearInterval(synthTimer);
+        audioBtn.classList.remove('playing');
+        audioIcon.innerText = '🎵';
       } else {
-        bgAudio.volume = 0.25; // Soft background level
-        bgAudio.play().then(() => {
-          audioBtn.classList.add('playing');
-          audioBtn.innerText = '🔊';
-          isPlayingAudio = true;
-        }).catch(() => {});
+        isPlayingAudio = true;
+        audioBtn.classList.add('playing');
+        audioIcon.innerText = '🔊';
+        playSoftChord();
+        synthTimer = setInterval(playSoftChord, 3500);
       }
     }
 
