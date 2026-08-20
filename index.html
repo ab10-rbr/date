@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>August 24 — Geni</title>
+  <title>August 25 — Geni</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
@@ -404,12 +404,12 @@
       <button class="btn-primary" onclick="verifyPassword()">Enter Passcode 🔒</button>
     </div>
 
-    <!-- Welcome View (Hidden initially) -->
+    <!-- Welcome View -->
     <div id="welcome-view" style="display: none;">
       <div class="header">
         <div class="greeting" id="dynamic-greeting">Hi, Geni</div>
         <div class="subtitle-wrapper">
-          <span class="subtitle">August 24, 2026</span>
+          <span class="subtitle">August 25, 2026</span>
           <button class="audio-pill" id="audio-toggle" onclick="toggleAudio()" title="Toggle Ambient Audio">
             <span id="audio-icon">🎵</span>
           </button>
@@ -426,7 +426,7 @@
       <div class="header">
         <div class="greeting">Hi, Geni</div>
         <div class="subtitle-wrapper">
-          <span class="subtitle">August 24, 2026</span>
+          <span class="subtitle">August 25, 2026</span>
         </div>
       </div>
 
@@ -470,7 +470,7 @@
         
         <div class="digital-pass">
           <div class="pass-header">
-            <span class="pass-title">AUG 24 PASS</span>
+            <span class="pass-title">AUG 25 PASS</span>
             <span class="pass-guest">Geni</span>
           </div>
           <div class="summary-row"><span class="summary-key">1. Dining</span><span class="summary-val" id="sum-food">-</span></div>
@@ -874,7 +874,7 @@
 
     function sendToWhatsApp() {
       triggerHaptic();
-      const msg = `Hi! Here's our plan for August 24th:%0A%0A🥩 *Dining:* ${selections.food}%0A✨ *Afternoon Activity:* ${selections.activity}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}`;
+      const msg = `Hi! Here's our plan for August 25th:%0A%0A🥩 *Dining:* ${selections.food}%0A✨ *Afternoon Activity:* ${selections.activity}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}`;
       window.open(`https://wa.me/${MAIN_PHONE_NUMBER}?text=${msg}`, '_blank');
     }
 
@@ -883,12 +883,12 @@
       const icsData = 
 `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//August 24 Geni Date Pass//EN
+PRODID:-//August 25 Geni Date Pass//EN
 BEGIN:VEVENT
-SUMMARY:August 24 — Special Date
+SUMMARY:August 25 — Special Date
 DESCRIPTION:Dining: ${selections.food}\\nActivity: ${selections.activity}\\nDirty Coffee: ${selections.coffee}\\nDessert: ${selections.dessert}
-DTSTART:20260824T060000Z
-DTEND:20260824T140000Z
+DTSTART:20260825T060000Z
+DTEND:20260825T140000Z
 LOCATION:Jakarta
 END:VEVENT
 END:VCALENDAR`;
@@ -896,7 +896,7 @@ END:VCALENDAR`;
       const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', 'August_24_Plan.ics');
+      link.setAttribute('download', 'August_25_Plan.ics');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
