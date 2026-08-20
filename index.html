@@ -352,7 +352,8 @@
   </div>
 
   <script>
-    const YOUR_PHONE_NUMBER = "6281298811308"; // <-- Ganti nomor WA kamu di sini
+    const MAIN_PHONE_NUMBER = "6281298811308"; // Nomor kamu
+    const SECONDARY_PHONE_NUMBER = "6282284126820"; // Nomor Geni
 
     const stages = [
       {
@@ -377,6 +378,7 @@
           'Bounchon Steakhouse',
           'Justus Steakhouse',
           'Meatguy Steakhouse',
+          'Holycow! Steakhouse',
           'Bistecca'
         ]
       },
@@ -578,13 +580,11 @@
     }
 
     function sendToWhatsApp() {
-      const msg = `Hi Geni! Here's our plan for August 24th:%0A%0A✨ *Afternoon Activity:* ${selections.activity}%0A🥩 *Dining:* ${selections.food}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}%0A%0ASee you!`;
-      window.open(`https://wa.me/${YOUR_PHONE_NUMBER}?text=${msg}`, '_blank');
+      const msg = `Hi! Here's our plan for August 24th:%0A%0A✨ *Afternoon Activity:* ${selections.activity}%0A🥩 *Dining:* ${selections.food}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}%0A%0A(Cc: ${SECONDARY_PHONE_NUMBER})`;
+      window.open(`https://wa.me/${MAIN_PHONE_NUMBER}?text=${msg}`, '_blank');
     }
 
     renderStage();
   </script>
 </body>
 </html>
-
-Just edit index.html on GitHub, replace the code, and commit. You're completely good to go!
