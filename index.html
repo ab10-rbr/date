@@ -372,8 +372,9 @@
   <div class="container" id="main-container">
     
     <!-- Audio Control Button -->
-    <button class="audio-btn" id="audio-toggle" onclick="toggleAudio()" title="Toggle Chill Audio">🎵</button>
-    <audio id="bg-audio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"></audio>
+    <button class="audio-btn" id="audio-toggle" onclick="toggleAudio()" title="Toggle Ambient Audio">🎵</button>
+    <!-- Soft Piano Ambient Stream -->
+    <audio id="bg-audio" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a2b160.mp3?filename=relaxing-piano-10853.mp3"></audio>
 
     <!-- Welcome View -->
     <div id="welcome-view">
@@ -458,7 +459,7 @@
   <script>
     const MAIN_PHONE_NUMBER = "6281298811308";
 
-    // Audio Player Toggle
+    // Audio Control
     const bgAudio = document.getElementById('bg-audio');
     const audioBtn = document.getElementById('audio-toggle');
     let isPlayingAudio = false;
@@ -471,7 +472,7 @@
         audioBtn.innerText = '🎵';
         isPlayingAudio = false;
       } else {
-        bgAudio.volume = 0.4;
+        bgAudio.volume = 0.25; // Soft background level
         bgAudio.play().then(() => {
           audioBtn.classList.add('playing');
           audioBtn.innerText = '🔊';
@@ -576,10 +577,6 @@
 
     function startFlow() {
       triggerHaptic();
-      // Auto-start audio gently if browser allows
-      if (!isPlayingAudio) {
-        toggleAudio();
-      }
       document.getElementById('welcome-view').style.display = 'none';
       document.getElementById('app-flow').style.display = 'block';
       renderStage();
@@ -629,7 +626,6 @@
 
     function selectOption(value) {
       selections[stages[currentStage].key] = value;
-      speakText(`Selected ${value}`);
       nextStage();
     }
 
@@ -690,15 +686,6 @@
       }
     }
 
-    function speakText(text) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.95;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-
     function spinWheel() {
       if (isSpinning) return;
       triggerHaptic();
@@ -743,8 +730,6 @@
       selections[stages[currentStage].key] = chosenOption;
       document.getElementById('result-display').innerText = chosenOption;
 
-      speakText(`Selected ${chosenOption}`);
-
       setTimeout(() => {
         nextStage();
       }, 1800);
@@ -785,8 +770,6 @@
           colors: ['#d4af37', '#ffffff', '#2c2c34']
         });
       }
-
-      speakText("Plan complete for August 24th.");
     }
 
     function sendToWhatsApp() {
