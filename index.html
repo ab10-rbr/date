@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>August 24 — Geni</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
       --bg: #09090b;
@@ -36,6 +37,7 @@
       align-items: center;
       padding: 16px;
       overflow-x: hidden;
+      touch-action: pan-y;
     }
 
     .container {
@@ -47,7 +49,7 @@
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--surface-border);
       border-radius: 28px;
-      padding: 28px 20px;
+      padding: 32px 22px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
       position: relative;
     }
@@ -69,11 +71,11 @@
 
     .greeting {
       font-family: "Georgia", "Didot", serif;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 400;
       letter-spacing: -0.5px;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       font-style: italic;
     }
 
@@ -84,6 +86,15 @@
       color: var(--accent);
       font-weight: 600;
       opacity: 0.9;
+    }
+
+    .note-text {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.5;
+      margin: 20px 0 28px;
+      font-style: italic;
     }
 
     .steps-bar {
@@ -99,6 +110,7 @@
       border-radius: 50%;
       background: var(--surface-border);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
     }
 
     .dot.active {
@@ -139,9 +151,14 @@
       align-items: center;
     }
 
-    .opt-card:hover {
+    .opt-card.selected {
       background: var(--accent-muted);
-      border-color: rgba(212, 175, 55, 0.3);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .opt-card:active {
+      transform: scale(0.98);
     }
 
     .custom-input-box {
@@ -265,64 +282,90 @@
       text-align: right;
       max-width: 60%;
     }
+
+    .swipe-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 14px;
+      opacity: 0.6;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <div class="greeting">Hi, Geni</div>
-      <div class="subtitle">August 24, 2026</div>
+  <div class="container" id="main-container">
+    
+    <!-- Welcome View -->
+    <div id="welcome-view">
+      <div class="header" style="margin-bottom:16px;">
+        <div class="greeting">Hi, Geni</div>
+        <div class="subtitle">August 24, 2026</div>
+      </div>
+      <div class="note-text">
+        "No special occasion. Just thought you should be celebrated everyday."
+      </div>
+      <button class="btn-primary" onclick="startFlow()">Start Planning ✨</button>
     </div>
 
-    <div class="steps-bar">
-      <div class="dot active" id="dot-0"></div>
-      <div class="dot" id="dot-1"></div>
-      <div class="dot" id="dot-2"></div>
-      <div class="dot" id="dot-3"></div>
-    </div>
-
-    <div id="selection-view">
-      <div class="stage-label" id="stage-title">Choose Main Dining</div>
-      
-      <div class="options-grid" id="options-container"></div>
-
-      <div class="custom-input-box" id="custom-box">
-        <input type="text" class="text-input" id="custom-input" placeholder="Type your idea here...">
-        <button class="btn-primary" onclick="submitCustomInput()" style="padding:12px;">Save Option</button>
+    <!-- Main Content Container -->
+    <div id="app-flow" style="display: none;">
+      <div class="header">
+        <div class="greeting">Hi, Geni</div>
+        <div class="subtitle">August 24, 2026</div>
       </div>
 
-      <div class="actions-bar" id="actions-bar">
-        <button class="btn-secondary" onclick="showCustomInput()">Suggest others ✏️</button>
-        <button class="btn-secondary" onclick="enableWheelMode()">Can’t pick? Spin for me 🎲</button>
+      <div class="steps-bar">
+        <div class="dot active" id="dot-0" onclick="goToStage(0)"></div>
+        <div class="dot" id="dot-1" onclick="goToStage(1)"></div>
+        <div class="dot" id="dot-2" onclick="goToStage(2)"></div>
+        <div class="dot" id="dot-3" onclick="goToStage(3)"></div>
+      </div>
+
+      <div id="selection-view">
+        <div class="stage-label" id="stage-title">Choose Main Dining</div>
+        
+        <div class="options-grid" id="options-container"></div>
+
+        <div class="custom-input-box" id="custom-box">
+          <input type="text" class="text-input" id="custom-input" placeholder="Type your idea here...">
+          <button class="btn-primary" onclick="submitCustomInput()" style="padding:12px;">Save Option</button>
+        </div>
+
+        <div class="actions-bar" id="actions-bar">
+          <button class="btn-secondary" onclick="showCustomInput()">Suggest others ✏️</button>
+          <button class="btn-secondary" onclick="enableWheelMode()">Can’t pick? Spin for me 🎲</button>
+        </div>
+
+        <div class="swipe-hint">← Swipe left / right to navigate →</div>
+      </div>
+
+      <div id="wheel-view" class="wheel-modal">
+        <div class="stage-label" id="wheel-stage-title">Spinning Selection</div>
+        <div class="wheel-container">
+          <div class="needle"></div>
+          <canvas id="wheel" width="480" height="480"></canvas>
+        </div>
+        <div class="selection-display" id="result-display">Tap Spin to Decide</div>
+        <button class="btn-primary" id="spin-btn" onclick="spinWheel()">Spin Wheel</button>
+      </div>
+
+      <div id="summary-view" style="display: none;">
+        <div class="stage-label">All Set 🥂</div>
+        <div class="summary-card">
+          <div class="summary-row"><span class="summary-key">1. Dining</span><span class="summary-val" id="sum-food">-</span></div>
+          <div class="summary-row"><span class="summary-key">2. Activity</span><span class="summary-val" id="sum-act">-</span></div>
+          <div class="summary-row"><span class="summary-key">3. Dirty Coffee</span><span class="summary-val" id="sum-coffee">-</span></div>
+          <div class="summary-row"><span class="summary-key">4. Dessert</span><span class="summary-val" id="sum-dessert">-</span></div>
+        </div>
+        <button class="btn-primary" onclick="sendToWhatsApp()">Confirm & Send Plan</button>
       </div>
     </div>
 
-    <div id="wheel-view" class="wheel-modal">
-      <div class="stage-label" id="wheel-stage-title">Spinning Selection</div>
-      <div class="wheel-container">
-        <div class="needle"></div>
-        <canvas id="wheel" width="480" height="480"></canvas>
-      </div>
-      <div class="selection-display" id="result-display">Tap Spin to Decide</div>
-      <button class="btn-primary" id="spin-btn" onclick="spinWheel()">Spin Wheel</button>
-    </div>
-
-    <div id="summary-view" style="display: none;">
-      <div class="stage-label">All Set 🥂</div>
-      <div class="summary-card">
-        <div class="summary-row"><span class="summary-key">1. Dining</span><span class="summary-val" id="sum-food">-</span></div>
-        <div class="summary-row"><span class="summary-key">2. Activity</span><span class="summary-val" id="sum-act">-</span></div>
-        <div class="summary-row"><span class="summary-key">3. Dirty Coffee</span><span class="summary-val" id="sum-coffee">-</span></div>
-        <div class="summary-row"><span class="summary-key">4. Dessert</span><span class="summary-val" id="sum-dessert">-</span></div>
-      </div>
-      <button class="btn-primary" onclick="sendToWhatsApp()">Confirm & Send Plan</button>
-    </div>
   </div>
 
   <script>
     const MAIN_PHONE_NUMBER = "6281298811308";
-    const SECONDARY_PHONE_NUMBER = "6282284126820";
 
     const stages = [
       {
@@ -380,6 +423,27 @@
 
     const palette = ['#1a1a1e', '#24242a', '#141417', '#2c2c34', '#1f1f24', '#282830'];
 
+    function triggerHaptic() {
+      if (navigator.vibrate) {
+        navigator.vibrate(15);
+      }
+    }
+
+    function startFlow() {
+      triggerHaptic();
+      document.getElementById('welcome-view').style.display = 'none';
+      document.getElementById('app-flow').style.display = 'block';
+      renderStage();
+    }
+
+    function goToStage(idx) {
+      if (idx >= 0 && idx < stages.length) {
+        triggerHaptic();
+        currentStage = idx;
+        renderStage();
+      }
+    }
+
     function renderStage() {
       document.querySelectorAll('.dot').forEach((d, idx) => {
         d.classList.toggle('active', idx === currentStage);
@@ -391,11 +455,17 @@
       const container = document.getElementById('options-container');
       container.innerHTML = '';
 
+      const currentSelection = selections[stage.key];
+
       stage.options.forEach(opt => {
         const card = document.createElement('div');
-        card.className = 'opt-card';
-        card.innerHTML = `<span>${opt}</span> <span style="opacity:0.4;">→</span>`;
-        card.onclick = () => selectOption(opt);
+        const isSelected = currentSelection === opt;
+        card.className = `opt-card ${isSelected ? 'selected' : ''}`;
+        card.innerHTML = `<span>${opt}</span> <span style="opacity:${isSelected ? '1' : '0.4'};">${isSelected ? '✓' : '→'}</span>`;
+        card.onclick = () => {
+          triggerHaptic();
+          selectOption(opt);
+        };
         container.appendChild(card);
       });
 
@@ -405,6 +475,7 @@
 
       document.getElementById('selection-view').style.display = 'block';
       document.getElementById('wheel-view').style.display = 'none';
+      document.getElementById('summary-view').style.display = 'none';
     }
 
     function selectOption(value) {
@@ -414,6 +485,7 @@
     }
 
     function showCustomInput() {
+      triggerHaptic();
       document.getElementById('custom-box').style.display = 'block';
       document.getElementById('custom-input').focus();
     }
@@ -421,11 +493,13 @@
     function submitCustomInput() {
       const val = document.getElementById('custom-input').value.trim();
       if (val) {
+        triggerHaptic();
         selectOption(val);
       }
     }
 
     function enableWheelMode() {
+      triggerHaptic();
       document.getElementById('selection-view').style.display = 'none';
       document.getElementById('wheel-view').style.display = 'block';
       document.getElementById('wheel-stage-title').innerText = stages[currentStage].title;
@@ -478,6 +552,7 @@
 
     function spinWheel() {
       if (isSpinning) return;
+      triggerHaptic();
       isSpinning = true;
       document.getElementById('spin-btn').disabled = true;
 
@@ -508,6 +583,7 @@
     }
 
     function finalizeSpin() {
+      triggerHaptic();
       const opts = stages[currentStage].options;
       const slice = (2 * Math.PI) / opts.length;
       
@@ -534,25 +610,71 @@
       }
     }
 
+    function prevStage() {
+      if (currentStage > 0) {
+        triggerHaptic();
+        currentStage--;
+        renderStage();
+      }
+    }
+
     function showSummary() {
       document.getElementById('selection-view').style.display = 'none';
       document.getElementById('wheel-view').style.display = 'none';
       document.getElementById('summary-view').style.display = 'block';
 
-      document.getElementById('sum-food').innerText = selections.food;
-      document.getElementById('sum-act').innerText = selections.activity;
-      document.getElementById('sum-coffee').innerText = selections.coffee;
-      document.getElementById('sum-dessert').innerText = selections.dessert;
+      document.getElementById('sum-food').innerText = selections.food || '-';
+      document.getElementById('sum-act').innerText = selections.activity || '-';
+      document.getElementById('sum-coffee').innerText = selections.coffee || '-';
+      document.getElementById('sum-dessert').innerText = selections.dessert || '-';
+
+      if (window.confetti) {
+        confetti({
+          particleCount: 70,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#d4af37', '#ffffff', '#2c2c34']
+        });
+      }
 
       speakText("Plan complete for August 24th.");
     }
 
     function sendToWhatsApp() {
-      const msg = `Hi! Here's our plan for August 24th:%0A%0A🥩 *Dining:* ${selections.food}%0A✨ *Afternoon Activity:* ${selections.activity}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}%0A%0A(Cc: ${SECONDARY_PHONE_NUMBER})`;
+      triggerHaptic();
+      const msg = `Hi! Here's our plan for August 24th:%0A%0A🥩 *Dining:* ${selections.food}%0A✨ *Afternoon Activity:* ${selections.activity}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}`;
       window.open(`https://wa.me/${MAIN_PHONE_NUMBER}?text=${msg}`, '_blank');
     }
 
-    renderStage();
+    // Touch Swipe Gesture Handling
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const mainContainer = document.getElementById('main-container');
+
+    mainContainer.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    mainContainer.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 50) { // minimum threshold for swipe
+        if (diff < 0) {
+          // Swiped left -> next stage (if already selected)
+          if (selections[stages[currentStage].key]) {
+            nextStage();
+          }
+        } else {
+          // Swiped right -> prev stage
+          prevStage();
+        }
+      }
+    }
   </script>
 </body>
 </html>
