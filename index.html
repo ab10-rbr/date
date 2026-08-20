@@ -251,12 +251,39 @@
       cursor: pointer;
     }
 
-    .summary-card {
-      background: rgba(10, 10, 12, 0.6);
-      border: 1px solid var(--surface-border);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 24px;
+    /* Digital Pass Styling */
+    .digital-pass {
+      background: linear-gradient(145deg, rgba(18, 18, 22, 0.9), rgba(10, 10, 12, 0.95));
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    }
+
+    .pass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pass-title {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .pass-guest {
+      font-family: "Georgia", serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text);
     }
 
     .summary-row {
@@ -283,6 +310,26 @@
       max-width: 60%;
     }
 
+    .pass-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .barcode-stub {
+      height: 24px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--accent-muted),
+        var(--accent-muted) 2px,
+        transparent 2px,
+        transparent 6px
+      );
+      opacity: 0.6;
+      border-radius: 4px;
+    }
+
     .swipe-hint {
       font-size: 0.72rem;
       color: var(--text-dim);
@@ -303,7 +350,7 @@
         <div class="subtitle">August 24, 2026</div>
       </div>
       <div class="note-text">
-        "No special occasion. Just thought you should be celebrated everyday."
+        No special occasion. Just thought you should be celebrated everyday.
       </div>
       <button class="btn-primary" onclick="startFlow()">Start Planning ✨</button>
     </div>
@@ -351,14 +398,26 @@
       </div>
 
       <div id="summary-view" style="display: none;">
-        <div class="stage-label">All Set 🥂</div>
-        <div class="summary-card">
+        <div class="stage-label">Access Granted 🥂</div>
+        
+        <div class="digital-pass">
+          <div class="pass-header">
+            <span class="pass-title">VIP Date Pass</span>
+            <span class="pass-guest">Geni</span>
+          </div>
           <div class="summary-row"><span class="summary-key">1. Dining</span><span class="summary-val" id="sum-food">-</span></div>
           <div class="summary-row"><span class="summary-key">2. Activity</span><span class="summary-val" id="sum-act">-</span></div>
           <div class="summary-row"><span class="summary-key">3. Dirty Coffee</span><span class="summary-val" id="sum-coffee">-</span></div>
           <div class="summary-row"><span class="summary-key">4. Dessert</span><span class="summary-val" id="sum-dessert">-</span></div>
+          <div class="pass-footer">
+            <div class="barcode-stub"></div>
+          </div>
         </div>
-        <button class="btn-primary" onclick="sendToWhatsApp()">Confirm & Send Plan</button>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn-primary" onclick="sendToWhatsApp()">Confirm & Send Plan</button>
+          <button class="btn-secondary" onclick="addToCalendar()">Add to Calendar 📅</button>
+        </div>
       </div>
     </div>
 
@@ -646,6 +705,30 @@
       window.open(`https://wa.me/${MAIN_PHONE_NUMBER}?text=${msg}`, '_blank');
     }
 
+    function addToCalendar() {
+      triggerHaptic();
+      const icsData = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//August 24 Geni Date Pass//EN
+BEGIN:VEVENT
+SUMMARY:August 24 — Special Date
+DESCRIPTION:Dining: ${selections.food}\\nActivity: ${selections.activity}\\nDirty Coffee: ${selections.coffee}\\nDessert: ${selections.dessert}
+DTSTART:20260824T060000Z
+DTEND:20260824T140000Z
+LOCATION:Jakarta
+END:VEVENT
+END:VCALENDAR`;
+
+      const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', 'August_24_Plan.ics');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
     // Touch Swipe Gesture Handling
     let touchStartX = 0;
     let touchEndX = 0;
@@ -663,14 +746,12 @@
 
     function handleSwipe() {
       const diff = touchEndX - touchStartX;
-      if (Math.abs(diff) > 50) { // minimum threshold for swipe
+      if (Math.abs(diff) > 50) {
         if (diff < 0) {
-          // Swiped left -> next stage (if already selected)
           if (selections[stages[currentStage].key]) {
             nextStage();
           }
         } else {
-          // Swiped right -> prev stage
           prevStage();
         }
       }
