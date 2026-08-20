@@ -202,12 +202,18 @@
       width: 100%;
       padding: 14px 16px;
       background: rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--accent);
+      border: 1px solid var(--surface-border);
       border-radius: 14px;
       color: var(--text);
       font-size: 0.9rem;
       outline: none;
       margin-bottom: 10px;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--accent);
     }
 
     .actions-bar {
@@ -369,14 +375,37 @@
       margin-top: 14px;
       opacity: 0.6;
     }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
   </style>
 </head>
 <body>
 
   <div class="container" id="main-container">
     
-    <!-- Welcome View -->
-    <div id="welcome-view">
+    <!-- Password Lock View -->
+    <div id="password-view">
+      <div class="header" style="margin-bottom:20px;">
+        <div class="greeting">Restricted Access</div>
+        <div class="subtitle">Enter passcode to unlock</div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <input type="password" class="text-input" id="pass-input" placeholder="Passcode..." onkeyup="handlePassEnter(event)">
+        <div id="pass-error" style="color:#ef4444; font-size:0.75rem; text-align:center; display:none; margin-top:-4px; margin-bottom:12px;">Incorrect passcode. Try again.</div>
+      </div>
+      <button class="btn-primary" onclick="verifyPassword()">Enter Passcode 🔒</button>
+    </div>
+
+    <!-- Welcome View (Hidden initially) -->
+    <div id="welcome-view" style="display: none;">
       <div class="header">
         <div class="greeting" id="dynamic-greeting">Hi, Geni</div>
         <div class="subtitle-wrapper">
@@ -464,6 +493,29 @@
 
   <script>
     const MAIN_PHONE_NUMBER = "6281298811308";
+
+    // Password Lock Verification
+    function handlePassEnter(e) {
+      if (e.key === 'Enter') {
+        verifyPassword();
+      }
+    }
+
+    function verifyPassword() {
+      triggerHaptic();
+      const input = document.getElementById('pass-input').value.trim().toLowerCase();
+      const errorMsg = document.getElementById('pass-error');
+      const container = document.getElementById('main-container');
+
+      if (input === 'binky') {
+        document.getElementById('password-view').style.display = 'none';
+        document.getElementById('welcome-view').style.display = 'block';
+      } else {
+        errorMsg.style.display = 'block';
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 400);
+      }
+    }
 
     // Web Audio Synthesizer (Native Ambient Piano Chords)
     let audioCtx = null;
