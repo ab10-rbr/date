@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>August 24 — A Day For Geni</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: rgba(22, 22, 26, 0.75);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --accent: #d4af37;
+      --accent-muted: rgba(212, 175, 55, 0.15);
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --glow: rgba(212, 175, 55, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--surface-border);
+      border-radius: 32px;
+      padding: 40px 28px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient top glow bar */
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .greeting {
+      font-family: "Georgia", "Didot", serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    /* Step Dots */
+    .steps-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--surface-border);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .dot.active {
+      background: var(--accent);
+      transform: scale(1.4);
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    .stage-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    /* Wheel Layout */
+    .wheel-container {
+      position: relative;
+      width: 270px;
+      height: 270px;
+      margin: 0 auto 28px;
+    }
+
+    .needle {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 18px solid var(--accent);
+      z-index: 10;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid var(--surface-border);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    }
+
+    .selection-display {
+      min-height: 44px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.2px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid var(--surface-border);
+      background: linear-gradient(180deg, #f4f4f5 0%, #e4e4e7 100%);
+      color: #09090b;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: rgba(10, 10, 12, 0.6);
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.88rem;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-key {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .summary-val {
+      color: var(--accent);
+      font-weight: 500;
+      text-align: right;
+      max-width: 60%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="greeting">Hi, Geni</div>
+      <div class="subtitle">August 24, 2026 — An Intentional Day</div>
+    </div>
+
+    <div class="steps-bar">
+      <div class="dot active" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+
+    <div id="wheel-view">
+      <div class="stage-label" id="stage-title">Choose Activity</div>
+      <div class="wheel-container">
+        <div class="needle"></div>
+        <canvas id="wheel" width="540" height="540"></canvas>
+      </div>
+      <div class="selection-display" id="result-display">Tap below to spin</div>
+      <button class="btn" id="spin-btn" onclick="spinWheel()">Spin Wheel</button>
+    </div>
+
+    <div id="summary-view" style="display: none;">
+      <div class="stage-label">Itinerary Curated</div>
+      <div class="summary-card">
+        <div class="summary-row"><span class="summary-key">Activity</span><span class="summary-val" id="sum-act">-</span></div>
+        <div class="summary-row"><span class="summary-key">Dining</span><span class="summary-val" id="sum-food">-</span></div>
+        <div class="summary-row"><span class="summary-key">Dirty Coffee</span><span class="summary-val" id="sum-coffee">-</span></div>
+        <div class="summary-row"><span class="summary-key">Dessert</span><span class="summary-val" id="sum-dessert">-</span></div>
+      </div>
+      <button class="btn" onclick="sendToWhatsApp()">Confirm & Send Plan</button>
+    </div>
+  </div>
+
+  <script>
+    const YOUR_PHONE_NUMBER = "6281298811308"; // <-- Replace with your WhatsApp number
+
+    const stages = [
+      {
+        key: 'activity',
+        title: 'Morning Activity',
+        options: ['Indoor Bouldering', 'Art & Pottery Workshop', 'Arcade & VR Session', 'Vinyl & Gallery Walk']
+      },
+      {
+        key: 'food',
+        title: 'Main Dining',
+        options: ['Oli Can Eat (Hwaro)', 'Oli Can Eat (Dintan)', 'Oli Can Eat (Jjukku)', 'Bistecca Steakhouse', 'Bonchon Chicken', 'Justus Steakhouse']
+      },
+      {
+        key: 'coffee',
+        title: 'Dirty Coffee Spot',
+        options: ['Second Floor Coffee', 'Bakerman (ASHTA)', 'Common Grounds', 'Titik Temu Coffee']
+      },
+      {
+        key: 'dessert',
+        title: 'Late Dessert',
+        options: ['Flour Flour', 'Gontran Cherrier', 'Scarlet’s Cake', 'Exquise Patisserie']
+      }
+    ];
+
+    let currentStage = 0;
+    const selections = {};
+    let isSpinning = false;
+    let currentAngle = 0;
+
+    const palette = ['#1a1a1e', '#24242a', '#141417', '#2c2c34', '#1f1f24', '#282830'];
+
+    function drawWheel() {
+      const canvas = document.getElementById('wheel');
+      const ctx = canvas.getContext('2d');
+      const opts = stages[currentStage].options;
+      const slice = (2 * Math.PI) / opts.length;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < opts.length; i++) {
+        const angle = currentAngle + i * slice;
+        ctx.beginPath();
+        ctx.fillStyle = palette[i % palette.length];
+        ctx.moveTo(270, 270);
+        ctx.arc(270, 270, 260, angle, angle + slice);
+        ctx.lineTo(270, 270);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(270, 270);
+        ctx.rotate(angle + slice / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#d4af37";
+        ctx.font = "500 18px -apple-system, sans-serif";
+        ctx.fillText(opts[i], 230, 6);
+        ctx.restore();
+      }
+    }
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function spinWheel() {
+      if (isSpinning) return;
+      isSpinning = true;
+      document.getElementById('spin-btn').disabled = true;
+
+      const extraRounds = 5 + Math.floor(Math.random() * 3);
+      const randomOffset = Math.random() * (2 * Math.PI);
+      const totalRotation = extraRounds * 2 * Math.PI + randomOffset;
+      
+      const startAngle = currentAngle;
+      const startTime = performance.now();
+      const duration = 3800;
+
+      function animate(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+
+        currentAngle = startAngle + totalRotation * easeOut;
+        drawWheel();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          finalizeSpin();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function finalizeSpin() {
+      const opts = stages[currentStage].options;
+      const slice = (2 * Math.PI) / opts.length;
+      
+      const normalizedAngle = (1.5 * Math.PI - (currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const selectedIndex = Math.floor(normalizedAngle / slice) % opts.length;
+      const chosenOption = opts[selectedIndex];
+
+      selections[stages[currentStage].key] = chosenOption;
+      document.getElementById('result-display').innerText = chosenOption;
+
+      speakText(`Selected: ${chosenOption}`);
+
+      setTimeout(() => {
+        currentStage++;
+        if (currentStage < stages.length) {
+          setupStage();
+        } else {
+          showSummary();
+        }
+      }, 2000);
+    }
+
+    function setupStage() {
+      document.querySelectorAll('.dot').forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentStage);
+      });
+      document.getElementById('stage-title').innerText = stages[currentStage].title;
+      document.getElementById('result-display').innerText = "Tap below to spin";
+      document.getElementById('spin-btn').disabled = false;
+      currentAngle = 0;
+      drawWheel();
+    }
+
+    function showSummary() {
+      document.getElementById('wheel-view').style.display = 'none';
+      document.getElementById('summary-view').style.display = 'block';
+
+      document.getElementById('sum-act').innerText = selections.activity;
+      document.getElementById('sum-food').innerText = selections.food;
+      document.getElementById('sum-coffee').innerText = selections.coffee;
+      document.getElementById('sum-dessert').innerText = selections.dessert;
+
+      speakText("Itinerary curated for August 24th.");
+    }
+
+    function sendToWhatsApp() {
+      const msg = `Hi Geni! Here's our curated plan for August 24th:%0A%0A✨ *Activity:* ${selections.activity}%0A🥩 *Dining:* ${selections.food}%0A☕ *Dirty Coffee:* ${selections.coffee}%0A🥐 *Dessert:* ${selections.dessert}%0A%0ASee you then!`;
+      window.open(`https://wa.me/${YOUR_PHONE_NUMBER}?text=${msg}`, '_blank');
+    }
+
+    drawWheel();
+  </script>
+</body>
+</html>
