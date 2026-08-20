@@ -15,6 +15,8 @@
       --text: #f4f4f5;
       --text-dim: #a1a1aa;
       --glow: rgba(212, 175, 55, 0.25);
+      --mouse-x: 50%;
+      --mouse-y: 50%;
     }
 
     * {
@@ -28,8 +30,8 @@
     body {
       background-color: var(--bg);
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 70%),
-        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+        radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(212, 175, 55, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -38,6 +40,7 @@
       padding: 16px;
       overflow-x: hidden;
       touch-action: pan-y;
+      transition: background-image 0.1s ease;
     }
 
     .container {
@@ -64,6 +67,31 @@
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
     }
 
+    .audio-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--accent);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 20;
+      transition: all 0.3s ease;
+    }
+
+    .audio-btn.playing {
+      background: var(--accent-muted);
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--glow);
+    }
+
     .header {
       text-align: center;
       margin-bottom: 24px;
@@ -71,7 +99,7 @@
 
     .greeting {
       font-family: "Georgia", "Didot", serif;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 400;
       letter-spacing: -0.5px;
       color: var(--text);
@@ -343,10 +371,14 @@
 
   <div class="container" id="main-container">
     
+    <!-- Audio Control Button -->
+    <button class="audio-btn" id="audio-toggle" onclick="toggleAudio()" title="Toggle Chill Audio">🎵</button>
+    <audio id="bg-audio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"></audio>
+
     <!-- Welcome View -->
     <div id="welcome-view">
       <div class="header" style="margin-bottom:16px;">
-        <div class="greeting">Hi, Geni</div>
+        <div class="greeting" id="dynamic-greeting">Hi, Geni</div>
         <div class="subtitle">August 24, 2026</div>
       </div>
       <div class="note-text">
@@ -402,7 +434,7 @@
         
         <div class="digital-pass">
           <div class="pass-header">
-            <span class="pass-title">VIP Date Pass</span>
+            <span class="pass-title">AUG 24 PASS</span>
             <span class="pass-guest">Geni</span>
           </div>
           <div class="summary-row"><span class="summary-key">1. Dining</span><span class="summary-val" id="sum-food">-</span></div>
@@ -425,6 +457,60 @@
 
   <script>
     const MAIN_PHONE_NUMBER = "6281298811308";
+
+    // Audio Player Toggle
+    const bgAudio = document.getElementById('bg-audio');
+    const audioBtn = document.getElementById('audio-toggle');
+    let isPlayingAudio = false;
+
+    function toggleAudio() {
+      triggerHaptic();
+      if (isPlayingAudio) {
+        bgAudio.pause();
+        audioBtn.classList.remove('playing');
+        audioBtn.innerText = '🎵';
+        isPlayingAudio = false;
+      } else {
+        bgAudio.volume = 0.4;
+        bgAudio.play().then(() => {
+          audioBtn.classList.add('playing');
+          audioBtn.innerText = '🔊';
+          isPlayingAudio = true;
+        }).catch(() => {});
+      }
+    }
+
+    // Set Dynamic Greeting
+    function initGreeting() {
+      const hour = new Date().getHours();
+      let greetingText = "Hi, Geni";
+      if (hour >= 5 && hour < 12) {
+        greetingText = "Good morning, Geni";
+      } else if (hour >= 12 && hour < 18) {
+        greetingText = "Good afternoon, Geni";
+      } else {
+        greetingText = "Good evening, Geni";
+      }
+      document.getElementById('dynamic-greeting').innerText = greetingText;
+    }
+    initGreeting();
+
+    // Mouse / Touch Glow Tracking
+    window.addEventListener('touchmove', e => {
+      if (e.touches.length > 0) {
+        const x = (e.touches[0].clientX / window.innerWidth) * 100;
+        const y = (e.touches[0].clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+        document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+      }
+    });
+
+    window.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+      document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    });
 
     const stages = [
       {
@@ -490,6 +576,10 @@
 
     function startFlow() {
       triggerHaptic();
+      // Auto-start audio gently if browser allows
+      if (!isPlayingAudio) {
+        toggleAudio();
+      }
       document.getElementById('welcome-view').style.display = 'none';
       document.getElementById('app-flow').style.display = 'block';
       renderStage();
