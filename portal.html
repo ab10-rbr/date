@@ -365,7 +365,7 @@
       
       <!-- Live Real-Time Weather -->
       <div class="card">
-        <div class="card-title">Live Weather — Jakarta 📍</div>
+        <div class="card-title">Live Weather — Jaksel 📍</div>
         <div class="weather-grid">
           <div class="weather-card-mini">
             <div style="font-size:0.7rem; color:var(--text-dim);">TODAY</div>
@@ -381,6 +381,7 @@
         <div style="font-size:0.72rem; color:var(--accent); text-align:center; margin-top:6px; font-weight:500;">
           🧥 Don't forget Bella's jacket!
         </div>
+        <button class="btn-secondary" style="margin-top:10px;" onclick="getUserGPSLocation()">Use My Live Location 📍</button>
       </div>
 
       <div class="card">
@@ -400,15 +401,32 @@
       </div>
     </div>
 
-    <!-- TAB 3: SPOTLIGHT & WISHLIST -->
+    <!-- TAB 3: SPOTLIGHT, CINEMA & WISHLIST -->
     <div id="tab-spotlight" class="tab-content">
+      
+      <!-- Cinema Now Showing Picker -->
+      <div class="card">
+        <div class="card-title">Now Showing in Cinemas 🎬</div>
+        <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:10px;">
+          Pick a movie currently playing to add to your date wishlist:
+        </div>
+        <select id="cinema-movie-select" class="input-field" style="margin-bottom:10px;">
+          <option value="The Odyssey (Christopher Nolan)">The Odyssey (Christopher Nolan) 🎬</option>
+          <option value="F1 (Brad Pitt Movie)">F1 (Brad Pitt Movie) 🏎️</option>
+          <option value="A Quiet Place: Day One">A Quiet Place: Day One 🤫</option>
+          <option value="Deadpool & Wolverine">Deadpool & Wolverine ⚔️</option>
+          <option value="Inside Out 2">Inside Out 2 🧠</option>
+        </select>
+        <button class="btn-action" onclick="addSelectedMovieSpot()">Add to Movie Wishlist 🍿</button>
+      </div>
+
       <div class="card">
         <div class="card-title">Saved Spots & Wishlist</div>
         <div class="input-group">
           <input type="text" id="spot-name" class="input-field" placeholder="Place or item name">
           <input type="text" id="spot-link" class="input-field" placeholder="IG / TikTok / Web Link (Optional)">
         </div>
-        <button class="btn-action" onclick="addSpot()">Add to List ✨</button>
+        <button class="btn-action" onclick="addSpot()">Add Custom Spot ✨</button>
       </div>
 
       <div class="card">
@@ -510,10 +528,14 @@
   <script>
     const PHONE_NUMBER = "6281298811308";
 
-    // High Precision Weather Sync Engine (Open-Meteo API)
+    // High Precision Jaksel Weather Sync Engine (Open-Meteo API)
+    // Jaksel Lat: -6.2615, Long: 106.8106
+    let currentLat = -6.2615;
+    let currentLong = 106.8106;
+
     async function fetchLiveWeather() {
       try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-6.2088&longitude=106.8456&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia%2FJakarta');
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLong}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia%2FJakarta`);
         const data = await res.json();
 
         const currentTemp = Math.round(data.current_weather.temperature);
@@ -533,6 +555,21 @@
         document.getElementById('weather-today-desc').innerText = `Clear Sky ☀️`;
         document.getElementById('weather-tomorrow-temp').innerText = `25°-32°C`;
         document.getElementById('weather-tomorrow-desc').innerText = `Partly Cloudy ⛅`;
+      }
+    }
+
+    function getUserGPSLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          currentLat = pos.coords.latitude;
+          currentLong = pos.coords.longitude;
+          fetchLiveWeather();
+          alert("📍 Live Location Synced!");
+        }, () => {
+          alert("Defaulting to Jaksel Radar 📍");
+        });
+      } else {
+        alert("Geolocation not supported. Showing Jaksel 📍");
       }
     }
 
@@ -725,6 +762,14 @@
         document.getElementById('spot-link').value = '';
         renderSpots();
       }
+    }
+
+    function addSelectedMovieSpot() {
+      const selectedMovie = document.getElementById('cinema-movie-select').value;
+      spots.push({ name: `Cinema Date: ${selectedMovie}`, link: '' });
+      localStorage.setItem('portal_spots', JSON.stringify(spots));
+      renderSpots();
+      alert(`Added "${selectedMovie}" to Movie Wishlist! 🍿`);
     }
 
     function deleteSpot(index) {
