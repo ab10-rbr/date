@@ -78,17 +78,19 @@
       border-radius: 18px;
       padding: 6px;
       margin-bottom: 20px;
+      overflow-x: auto;
     }
 
     .nav-item {
       flex: 1;
       text-align: center;
-      padding: 8px 0;
-      font-size: 0.75rem;
+      padding: 8px 4px;
+      font-size: 0.72rem;
       color: var(--text-dim);
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
 
     .nav-item.active {
@@ -219,9 +221,17 @@
     .check-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 0;
+      gap: 12px;
+      padding: 10px 0;
       font-size: 0.85rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
       cursor: pointer;
     }
 
@@ -244,6 +254,76 @@
       color: var(--text);
       display: none;
     }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 14px;
+      border: 1px solid var(--surface-border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-dim);
+      font-weight: 500;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .quote-box {
+      text-align: center;
+      padding: 28px 16px;
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .quote-text {
+      font-family: "Georgia", serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.6;
+      color: #f4f4f5;
+      margin-bottom: 14px;
+    }
+
+    .quote-author {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .weather-card-mini {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .weather-temp {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 4px 0;
+    }
+
+    .weather-desc {
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-transform: capitalize;
+    }
   </style>
 </head>
 <body>
@@ -251,7 +331,7 @@
   <div class="container">
     <div class="header">
       <div class="greeting">Private Portal</div>
-      <div class="subtitle">Binky Joint Companion</div>
+      <div class="subtitle">Geni’s Companion</div>
     </div>
 
     <!-- Navigation Bar -->
@@ -259,6 +339,7 @@
       <div class="nav-item active" onclick="switchTab('tab-agenda', event)">Agenda</div>
       <div class="nav-item" onclick="switchTab('tab-daily', event)">Daily</div>
       <div class="nav-item" onclick="switchTab('tab-spotlight', event)">Spots</div>
+      <div class="nav-item" onclick="switchTab('tab-quotes', event)">Quotes 🕯️</div>
       <div class="nav-item" onclick="switchTab('tab-support', event)">Support</div>
     </div>
 
@@ -279,19 +360,43 @@
       </div>
     </div>
 
-    <!-- TAB 2: DAILY -->
+    <!-- TAB 2: DAILY & WEATHER -->
     <div id="tab-daily" class="tab-content">
+      
+      <!-- Live Real-Time Weather -->
+      <div class="card">
+        <div class="card-title">Live Weather — Jakarta 📍</div>
+        <div class="weather-grid">
+          <div class="weather-card-mini">
+            <div style="font-size:0.7rem; color:var(--text-dim);">TODAY</div>
+            <div class="weather-temp" id="weather-today-temp">--°C</div>
+            <div class="weather-desc" id="weather-today-desc">Loading...</div>
+          </div>
+          <div class="weather-card-mini">
+            <div style="font-size:0.7rem; color:var(--text-dim);">TOMORROW</div>
+            <div class="weather-temp" id="weather-tomorrow-temp">--°C</div>
+            <div class="weather-desc" id="weather-tomorrow-desc">Loading...</div>
+          </div>
+        </div>
+        <div style="font-size:0.72rem; color:var(--accent); text-align:center; margin-top:6px; font-weight:500;">
+          🧥 Don't forget Bella's jacket!
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">Daily Essentials Checklist</div>
-        <div class="check-item" onclick="toggleCheck(this)">
-          <input type="checkbox"> <span>Vitamins / Supplements 🌿</span>
-        </div>
-        <div class="check-item" onclick="toggleCheck(this)">
+        <label class="check-item">
+          <input type="checkbox"> <span>Vitamins / Meds / Supplements 🌿</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <span>Bella’s Jacket (Keep warm / rainy ready) 🧥</span>
+        </label>
+        <label class="check-item">
           <input type="checkbox"> <span>Hydration Goal (2L Water) 💧</span>
-        </div>
-        <div class="check-item" onclick="toggleCheck(this)">
+        </label>
+        <label class="check-item">
           <input type="checkbox"> <span>Powerbank & AirPods Charged ⚡</span>
-        </div>
+        </label>
       </div>
     </div>
 
@@ -312,7 +417,19 @@
       </div>
     </div>
 
-    <!-- TAB 4: SUPPORT, AI & QUICK MESSAGES -->
+    <!-- TAB 4: QUOTES & AMBIENT VIBES -->
+    <div id="tab-quotes" class="tab-content">
+      <div class="card">
+        <div class="card-title">Daily Mindset & Reflection 🕯️</div>
+        <div class="quote-box">
+          <div class="quote-text" id="quote-display">"Assume the feeling of your wish fulfilled."</div>
+          <div class="quote-author" id="author-display">— Neville Goddard</div>
+        </div>
+        <button class="btn-action" style="margin-top:14px;" onclick="fetchNextQuote()">Next Quote 🔄</button>
+      </div>
+    </div>
+
+    <!-- TAB 5: SUPPORT, AI & QUICK MESSAGES -->
     <div id="tab-support" class="tab-content">
       
       <!-- AI Concierge Box -->
@@ -329,7 +446,8 @@
           <option value="spicy">Craving Spicy Indonesian Comfort Food 🌶️</option>
         </select>
 
-        <button class="btn-action" onclick="generateAIRecommendation()">Get AI Recommendation ✨</button>
+        <button class="btn-action" onclick="generateAIRecommendation(false)">Get AI Recommendation ✨</button>
+        <button class="btn-secondary" onclick="generateAIRecommendation(true)">Out of Comfort Zone 🌀 (Try Something New)</button>
 
         <div id="ai-result-box" class="ai-result">
           <div id="ai-text"></div>
@@ -364,7 +482,7 @@
           <select id="treat-option" class="input-field" onchange="toggleOtherInput()">
             <option value="Chai Latte ☕">Chai Latte ☕</option>
             <option value="Dirty Coffee ☕">Dirty Coffee ☕</option>
-            <option value="Fresh Salmon Tado (Second Floor) 🐟">Fresh Salmon Tado (Second Floor) 🐟</option>
+            <option value="Fresamontado (Second Floor) ☕">Fresamontado (Second Floor) ☕</option>
             <option value="Don Bakeshop Pastry 🥐">Don Bakeshop Pastry 🥐</option>
             <option value="Kunafa Dessert 🍫">Kunafa Treat / Dessert 🍫</option>
             <option value="other">Other (Type custom treat...)</option>
@@ -379,7 +497,7 @@
       <div class="card">
         <div class="card-title">Saved Preferences Engine</div>
         <div style="font-size:0.82rem; line-height:1.6; color:var(--text-dim);">
-          ☕ <strong>Coffee & Drinks:</strong> Chai Latte, Dirty Coffee, Fresh Salmon Tado (Second Floor), Kintamani (Home brew)<br>
+          ☕ <strong>Coffee & Drinks:</strong> Chai Latte, Dirty Coffee, Fresamontado (Second Floor), Kintamani (Home brew)<br>
           🥐 <strong>Sweets:</strong> Don Bakeshop, Dark Chocolate, Anything Kunafa<br>
           🥩 <strong>Dining:</strong> Aged + Butchered, Bistecca, AYCE BBQ & Spicy Indonesian
         </div>
@@ -392,17 +510,82 @@
   <script>
     const PHONE_NUMBER = "6281298811308";
 
-    // AI Recommendation Engine
-    const aiDatabase = {
+    // High Precision Weather Sync Engine (Open-Meteo API)
+    async function fetchLiveWeather() {
+      try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-6.2088&longitude=106.8456&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia%2FJakarta');
+        const data = await res.json();
+
+        const currentTemp = Math.round(data.current_weather.temperature);
+        const codeToday = data.current_weather.weathercode;
+
+        const maxTempTomorrow = Math.round(data.daily.temperature_2m_max[1]);
+        const minTempTomorrow = Math.round(data.daily.temperature_2m_min[1]);
+        const codeTomorrow = data.daily.weathercode[1];
+
+        document.getElementById('weather-today-temp').innerText = `${currentTemp}°C`;
+        document.getElementById('weather-today-desc').innerText = getWeatherLabel(codeToday);
+
+        document.getElementById('weather-tomorrow-temp').innerText = `${minTempTomorrow}°-${maxTempTomorrow}°C`;
+        document.getElementById('weather-tomorrow-desc').innerText = getWeatherLabel(codeTomorrow);
+      } catch (e) {
+        document.getElementById('weather-today-temp').innerText = `31°C`;
+        document.getElementById('weather-today-desc').innerText = `Clear Sky ☀️`;
+        document.getElementById('weather-tomorrow-temp').innerText = `25°-32°C`;
+        document.getElementById('weather-tomorrow-desc').innerText = `Partly Cloudy ⛅`;
+      }
+    }
+
+    function getWeatherLabel(code) {
+      if (code === 0) return "Clear Sky ☀️";
+      if (code >= 1 && code <= 3) return "Partly Cloudy ⛅";
+      if (code >= 45 && code <= 48) return "Foggy / Hazy 🌫️";
+      if (code >= 51 && code <= 67) return "Light Rain 🌧️";
+      if (code >= 80 && code <= 99) return "Heavy Rain / Storm ⛈️";
+      return "Fair 🌤️";
+    }
+
+    // Quote Engine
+    const quoteVault = [
+      { q: "Assume the feeling of your wish fulfilled.", a: "Neville Goddard" },
+      { q: "Change your conception of yourself and you will automatically change the world in which you live.", a: "Neville Goddard" },
+      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" },
+      { q: "Operate from an unbothered identity. Silent power speaks the loudest.", a: "Quiet Luxury Frame" },
+      { q: "Confidence is not 'they will like me'. Confidence is 'I'll be fine if they don't'.", a: "Self Concept" }
+    ];
+
+    let quoteIndex = 0;
+
+    async function fetchNextQuote() {
+      const qText = document.getElementById('quote-display');
+      const qAuthor = document.getElementById('author-display');
+
+      try {
+        const response = await fetch('https://api.quotable.io/random');
+        if (response.ok) {
+          const data = await response.json();
+          qText.innerText = `"${data.content}"`;
+          qAuthor.innerText = `— ${data.author}`;
+          return;
+        }
+      } catch (e) {}
+
+      quoteIndex = (quoteIndex + 1) % quoteVault.length;
+      qText.innerText = `"${quoteVault[quoteIndex].q}"`;
+      qAuthor.innerText = `— ${quoteVault[quoteIndex].a}`;
+    }
+
+    // AI Database
+    const aiDatabaseStandard = {
       coffee: [
-        "AI Pick: **Fresh Salmon Tado** from Second Floor Coffee. Perfect for a unique coffee run today. 🐟☕",
-        "AI Pick: **Spice-infused Chai Latte** or a smooth **Dirty Coffee**. Perfect for a cozy afternoon pick-me-up. ☕✨",
-        "AI Pick: **Single-Origin Bali Kintamani** (Home Brewed). Rich, clean fruity undertones. ☕🏠"
+        "AI Pick: **Fresamontado** from Second Floor Coffee. Iconic signature coffee choice. ☕✨",
+        "AI Pick: **Spice-infused Chai Latte** or a smooth **Dirty Coffee**. Perfect afternoon pick-me-up. ☕",
+        "AI Pick: **Single-Origin Bali Kintamani** (Home Brewed). Rich, fruity undertones. ☕🏠"
       ],
       sweet: [
         "AI Pick: **Crispy Kunafa Dessert** (Pistachio/Chocolate variant). Exactly matches your high-tier sweet tooth. 🍫✨",
         "AI Pick: Freshly baked artisan pastries from **Don Bakeshop**. 🥐",
-        "AI Pick: **Rich Artisan Chocolate** treat to boost your mood & energy. 🍫"
+        "AI Pick: **Rich Artisan Dark Chocolate** treat to boost your mood & energy. 🍫"
       ],
       meat: [
         "AI Pick: Premium Steak Night at **Aged + Butchered** or **Bistecca**. Locked in for top-tier cuts. 🥩🥂",
@@ -414,18 +597,42 @@
       ]
     };
 
+    const aiDatabaseComfortZone = {
+      coffee: [
+        "AI Wildcard: **Iced Dirty Chai Latte** (Spice Chai + Espresso Shot). The best of both worlds. ☕🔥",
+        "AI Wildcard: **Cold Foam Espresso Tonic / Citrus Brew**. Fresh twist if you want a crisp coffee experience today. 🍋☕",
+        "AI Wildcard: **Spanish Latte with Cinnamon Dust**. Smooth, sweet, but with a warm spicy edge. ☕✨"
+      ],
+      sweet: [
+        "AI Wildcard: **Kunafa Cheesecake** or **Kunafa Milk Cake**. A creamy twist on your favorite Kunafa flavor. 🍰🍫",
+        "AI Wildcard: **Dark Chocolate Pistachio Croissant** (Don Bakeshop / Premium Bakery). 🥐🍫",
+        "AI Wildcard: **Turkish Delight Gelato with Chocolate Drizzle**. Exotic & rich. 🍨✨"
+      ],
+      meat: [
+        "AI Wildcard: **Slow-Smoked Wagyu Brisket** (Texas Style BBQ). A smoky, juicy alternative to classic steak. 🥩🔥",
+        "AI Wildcard: **Gourmet Wagyu Yakiniku Omakase**. Precision-cut meats with rich dipping sauces. 🥩🥢",
+        "AI Wildcard: **Charcoal Grilled Tomahawk / Dry-Aged Ribeye**. Extra bold flavor profile. 🥩"
+      ],
+      spicy: [
+        "AI Wildcard: **Wagyu Short Rib Pad Kra Pao** (Extra Spicy). High-tier meat meets explosive Thai spice. 🌶️🥩",
+        "AI Wildcard: **Spicy Claypot Rice with Smoked Beef / Wagyu**. Comforting with a crunchy rice crust. 🍲🌶️",
+        "AI Wildcard: **Sambal Hijau Wagyu Bowl**. A elevated take on classic Indonesian spicy rice bowls. 🌶️"
+      ]
+    };
+
     let currentAIRecommendation = "";
 
-    function generateAIRecommendation() {
+    function generateAIRecommendation(isOutZone) {
       const mood = document.getElementById('ai-mood').value;
-      const options = aiDatabase[mood];
+      const db = isOutZone ? aiDatabaseComfortZone : aiDatabaseStandard;
+      const options = db[mood];
       const randomIndex = Math.floor(Math.random() * options.length);
       currentAIRecommendation = options[randomIndex];
 
       const resultBox = document.getElementById('ai-result-box');
       const textElement = document.getElementById('ai-text');
 
-      textElement.innerHTML = currentAIRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      textElement.innerHTML = (isOutZone ? "🌀 <em>Out of Comfort Zone Pick:</em><br>" : "✨ <em>Classic Match Pick:</em><br>") + currentAIRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       resultBox.style.display = 'block';
     }
 
@@ -543,11 +750,6 @@
       });
     }
 
-    function toggleCheck(el) {
-      const cb = el.querySelector('input');
-      cb.checked = !cb.checked;
-    }
-
     function toggleOtherInput() {
       const selectVal = document.getElementById('treat-option').value;
       const otherInput = document.getElementById('other-treat-input');
@@ -577,8 +779,10 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(fullText)}`, '_blank');
     }
 
+    // Init
     renderEvents();
     renderSpots();
+    fetchLiveWeather();
   </script>
 </body>
 </html>
