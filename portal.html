@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- Apple Web App & Home Screen Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/500/d4af37/star--v1.png">
+
   <title>Private Portal — Geni</title>
   <style>
     :root {
@@ -21,7 +28,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -34,6 +41,7 @@
       justify-content: center;
       align-items: flex-start;
       padding: 16px;
+      padding-top: env(safe-area-inset-top, 20px);
       overflow-x: hidden;
     }
 
@@ -50,25 +58,9 @@
       position: relative;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .greeting {
-      font-family: "Georgia", serif;
-      font-size: 1.8rem;
-      font-style: italic;
-      color: var(--text);
-    }
-
-    .subtitle {
-      font-size: 0.68rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
-    }
+    .header { text-align: center; margin-bottom: 20px; }
+    .greeting { font-family: "Georgia", serif; font-size: 1.8rem; font-style: italic; color: var(--text); }
+    .subtitle { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; }
 
     .nav-bar {
       display: flex;
@@ -100,13 +92,8 @@
       border: 1px solid var(--accent);
     }
 
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     .card {
       background: rgba(255, 255, 255, 0.02);
@@ -125,12 +112,7 @@
       letter-spacing: 1px;
     }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+    .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 
     .input-field {
       width: 100%;
@@ -143,9 +125,7 @@
       outline: none;
     }
 
-    .input-field:focus {
-      border-color: var(--accent);
-    }
+    .input-field:focus { border-color: var(--accent); }
 
     .btn-action {
       width: 100%;
@@ -168,11 +148,7 @@
       font-size: 0.85rem;
     }
 
-    .action-btns {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .action-btns { display: flex; align-items: center; gap: 12px; }
 
     .delete-btn {
       background: none;
@@ -184,11 +160,7 @@
       padding: 0 4px;
     }
 
-    .energy-grid {
-      display: grid;
-      grid-template-columns: repeat(1, 1fr);
-      gap: 8px;
-    }
+    .energy-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 8px; }
 
     .msg-btn {
       padding: 12px;
@@ -202,7 +174,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.2s ease;
     }
 
     .msg-btn:active {
@@ -211,12 +182,7 @@
       background: var(--accent-muted);
     }
 
-    .treat-selector {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .treat-selector { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 
     .check-item {
       display: flex;
@@ -232,7 +198,6 @@
       width: 18px;
       height: 18px;
       accent-color: var(--accent);
-      cursor: pointer;
     }
 
     .ai-box {
@@ -297,12 +262,7 @@
       color: var(--accent);
     }
 
-    .weather-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+    .weather-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
 
     .weather-card-mini {
       background: rgba(0, 0, 0, 0.4);
@@ -312,18 +272,8 @@
       text-align: center;
     }
 
-    .weather-temp {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text);
-      margin: 4px 0;
-    }
-
-    .weather-desc {
-      font-size: 0.72rem;
-      color: var(--accent);
-      text-transform: capitalize;
-    }
+    .weather-temp { font-size: 1.4rem; font-weight: 700; color: var(--text); margin: 4px 0; }
+    .weather-desc { font-size: 0.72rem; color: var(--accent); text-transform: capitalize; }
   </style>
 </head>
 <body>
@@ -362,8 +312,6 @@
 
     <!-- TAB 2: DAILY & WEATHER -->
     <div id="tab-daily" class="tab-content">
-      
-      <!-- Live Real-Time Weather -->
       <div class="card">
         <div class="card-title">Live Weather — Jaksel 📍</div>
         <div class="weather-grid">
@@ -403,8 +351,6 @@
 
     <!-- TAB 3: SPOTLIGHT, MOVIE PLANNER & WISHLIST -->
     <div id="tab-spotlight" class="tab-content">
-      
-      <!-- Open Movie Planner -->
       <div class="card">
         <div class="card-title">What movie do you want to watch today? 🎬</div>
         <div class="input-group">
@@ -446,12 +392,10 @@
 
     <!-- TAB 5: SUPPORT, AI & QUICK MESSAGES -->
     <div id="tab-support" class="tab-content">
-      
-      <!-- AI Concierge Box -->
       <div class="ai-box">
-        <div class="card-title" style="margin-bottom:6px;">Geni's AI Concierge 🤖</div>
+        <div class="card-title" style="margin-bottom:6px;">Geni's Live AI Concierge 🤖</div>
         <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:12px;">
-          Ask AI for tailored food/drink ideas matching your exact preferences.
+          Generates dynamic recommendations using AI live reasoning:
         </div>
         
         <select id="ai-mood" class="input-field" style="margin-bottom:10px;">
@@ -461,7 +405,7 @@
           <option value="spicy">Craving Spicy Indonesian Comfort Food 🌶️</option>
         </select>
 
-        <button class="btn-action" onclick="generateAIRecommendation(false)">Get AI Recommendation ✨</button>
+        <button class="btn-action" onclick="generateAIRecommendation(false)">Get Live AI Recommendation ✨</button>
         <button class="btn-secondary" onclick="generateAIRecommendation(true)">Out of Comfort Zone 🌀 (Try Something New)</button>
 
         <div id="ai-result-box" class="ai-result">
@@ -525,7 +469,6 @@
   <script>
     const PHONE_NUMBER = "6281298811308";
 
-    // High Precision Jaksel Weather Sync Engine
     let currentLat = -6.2615;
     let currentLong = 106.8106;
 
@@ -578,7 +521,6 @@
       return "Fair 🌤️";
     }
 
-    // Full 100 Quotes Vault (Guaranteed Unfiltered 100 Array)
     const quoteVault = [
       { q: "I'm interested in the truth. I'm not interested in the facade.", a: "Cillian Murphy" },
       { q: "You're not going to achieve anything unless you try to do something remarkable.", a: "Christopher Nolan" },
@@ -593,13 +535,11 @@
       { q: "Your thoughts become things. What you resist, persists.", a: "The Secret" },
       { q: "See yourself living in abundance and you will attract it.", a: "Rhonda Byrne (The Secret)" },
       { q: "Assume the feeling of your wish fulfilled.", a: "Neville Goddard" },
-      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" },
       { q: "I'd rather be hated for who I am than loved for who I am not.", a: "Marilyn Monroe" },
       { q: "I'm not built to back down.", a: "Kim Kardashian" },
       { q: "You have to be relentless. You can't take no for an answer.", a: "Kris Jenner" },
       { q: "Whatever you hold in your mind on a consistent basis is exactly what you will create in your life.", a: "The Secret" },
       { q: "Change your conception of yourself and you will automatically change the world in which you live.", a: "Neville Goddard" },
-      { q: "Simplicity is the ultimate sophistication.", a: "Quiet Luxury Frame" },
       { q: "I don't do drama. I do business.", a: "Kim Kardashian" },
       { q: "A girl doesn't need anyone who doesn't need her.", a: "Marilyn Monroe" },
       { q: "The secret is within you, not outside.", a: "The Secret" },
@@ -612,14 +552,12 @@
       { q: "Live as if you were already the person you want to be.", a: "Neville Goddard" },
       { q: "I don't compete with anyone. I run my own race.", a: "Kim Kardashian" },
       { q: "When someone says 'no', I hear 'not yet'.", a: "Kris Jenner" },
-      { q: "An unbothered mind is an unbeatable mind.", a: "Unbothered Identity" },
       { q: "I'm only interested in doing things that challenge me.", a: "Cillian Murphy" },
       { q: "The cinema is a place for big ideas and big visions.", a: "Christopher Nolan" },
       { q: "Smart work always beats hard work alone.", a: "Matt Damon" },
       { q: "If you can make a girl laugh, you can make her do anything.", a: "Marilyn Monroe" },
       { q: "You are the magnet attracting your own reality.", a: "The Secret" },
       { q: "Believe that you possess it now, and you shall have it.", a: "Neville Goddard" },
-      { q: "Silent move, loud result.", a: "Quiet Luxury Frame" },
       { q: "I know my worth. I don't need validation.", a: "Kim Kardashian" },
       { q: "My job is to protect the empire and build the future.", a: "Kris Jenner" },
       { q: "We are all stars, and we deserve to twinkle.", a: "Marilyn Monroe" },
@@ -631,7 +569,6 @@
       { q: "Make everyday count, no matter what.", a: "Kris Jenner" },
       { q: "The law of attraction is always working, whether you realize it or not.", a: "The Secret" },
       { q: "Nurture your mind with great thoughts.", a: "Neville Goddard" },
-      { q: "Quality always speaks louder than hype.", a: "Quiet Luxury Frame" },
       { q: "I set my own boundaries.", a: "Kim Kardashian" },
       { q: "Turn every challenge into an opportunity.", a: "Kris Jenner" },
       { q: "Respect is earned, not demanded.", a: "Marilyn Monroe" },
@@ -644,7 +581,6 @@
       { q: "Sometimes good things fall apart so better things can fall together.", a: "Marilyn Monroe" },
       { q: "Gratitude is the shortcut to abundance.", a: "The Secret" },
       { q: "Claim your identity before the world assigns you one.", a: "Neville Goddard" },
-      { q: "Elegance is refusal.", a: "Quiet Luxury Frame" },
       { q: "I trust my intuition completely.", a: "Kim Kardashian" },
       { q: "Never rest on yesterday's wins.", a: "Kris Jenner" },
       { q: "Keep your heels, head, and standards high.", a: "Marilyn Monroe" },
@@ -657,7 +593,6 @@
       { q: "Real beauty begins the moment you decide to be yourself.", a: "Marilyn Monroe" },
       { q: "Your mind is a fertile garden; plant only success.", a: "The Secret" },
       { q: "Feel the reality of the state sought.", a: "Neville Goddard" },
-      { q: "Understate the gesture, overdeliver the outcome.", a: "Quiet Luxury Frame" },
       { q: "I stay locked into my vision.", a: "Kim Kardashian" },
       { q: "Work until your signature becomes an endorsement.", a: "Kris Jenner" },
       { q: "A wise girl knows her limits, a smart girl knows she has none.", a: "Marilyn Monroe" },
@@ -670,7 +605,6 @@
       { q: "Self-love is the ultimate power move.", a: "Marilyn Monroe" },
       { q: "What you imagine with feeling, you become.", a: "The Secret" },
       { q: "The subconscious mind obeys your conscious command.", a: "Neville Goddard" },
-      { q: "Confidence doesn't make noise.", a: "Quiet Luxury Frame" },
       { q: "My energy is private.", a: "Kim Kardashian" },
       { q: "Always remain two steps ahead.", a: "Kris Jenner" },
       { q: "Be a priority, not an option.", a: "Marilyn Monroe" },
@@ -678,79 +612,64 @@
       { q: "Focus is the rarest currency.", a: "Cillian Murphy" },
       { q: "Create experiences that resonate deeply.", a: "Christopher Nolan" },
       { q: "Stay true to your craft.", a: "Matt Damon" },
-      { q: "I am the architect of my own reality.", a: "Neville Goddard" },
-      { q: "It is done. Walk in the assumption of completion.", a: "Mind Power Seduction" }
+      { q: "I am the architect of my own reality.", a: "Neville Goddard" }
     ];
 
     function fetchNextQuote() {
       const qText = document.getElementById('quote-display');
       const qAuthor = document.getElementById('author-display');
 
-      // Random selection across all 100 quotes
       const randomIndex = Math.floor(Math.random() * quoteVault.length);
       qText.innerText = `"${quoteVault[randomIndex].q}"`;
       qAuthor.innerText = `— ${quoteVault[randomIndex].a}`;
     }
 
-    // AI Database
-    const aiDatabaseStandard = {
-      coffee: [
-        "AI Pick: **Fresamontado** from Second Floor Coffee. Iconic signature coffee choice. ☕✨",
-        "AI Pick: **Spice-infused Chai Latte** or a smooth **Dirty Coffee**. Perfect afternoon pick-me-up. ☕",
-        "AI Pick: **Single-Origin Bali Kintamani** (Home Brewed). Rich, fruity undertones. ☕🏠"
-      ],
-      sweet: [
-        "AI Pick: **Crispy Kunafa Dessert** (Pistachio/Chocolate variant). Exactly matches your high-tier sweet tooth. 🍫✨",
-        "AI Pick: Freshly baked artisan pastries from **Don Bakeshop**. 🥐",
-        "AI Pick: **Rich Artisan Dark Chocolate** treat to boost your mood & energy. 🍫"
-      ],
-      meat: [
-        "AI Pick: Premium Steak Night at **Aged + Butchered** or **Bistecca**. Locked in for top-tier cuts. 🥩🥂",
-        "AI Pick: **AYCE K-BBQ / Japanese Grill** session (Hwaro Grill or Gyu-Kaku). 🥩🔥"
-      ],
-      spicy: [
-        "AI Pick: **Spicy Beef Dendeng / Rendang** with warm rice. Full rich Indonesian flavor. 🌶️🥩",
-        "AI Pick: **Authentic Pad Kra Pao** or **Spicy Indonesian Grilled Beef**. Bold & satisfying. 🌶️"
-      ]
-    };
-
-    const aiDatabaseComfortZone = {
-      coffee: [
-        "AI Wildcard: **Iced Dirty Chai Latte** (Spice Chai + Espresso Shot). The best of both worlds. ☕🔥",
-        "AI Wildcard: **Cold Foam Espresso Tonic / Citrus Brew**. Fresh twist if you want a crisp coffee experience today. 🍋☕",
-        "AI Wildcard: **Spanish Latte with Cinnamon Dust**. Smooth, sweet, but with a warm spicy edge. ☕✨"
-      ],
-      sweet: [
-        "AI Wildcard: **Kunafa Cheesecake** or **Kunafa Milk Cake**. A creamy twist on your favorite Kunafa flavor. 🍰🍫",
-        "AI Wildcard: **Dark Chocolate Pistachio Croissant** (Don Bakeshop / Premium Bakery). 🥐🍫",
-        "AI Wildcard: **Turkish Delight Gelato with Chocolate Drizzle**. Exotic & rich. 🍨✨"
-      ],
-      meat: [
-        "AI Wildcard: **Slow-Smoked Wagyu Brisket** (Texas Style BBQ). A smoky, juicy alternative to classic steak. 🥩🔥",
-        "AI Wildcard: **Gourmet Wagyu Yakiniku Omakase**. Precision-cut meats with rich dipping sauces. 🥩🥢",
-        "AI Wildcard: **Charcoal Grilled Tomahawk / Dry-Aged Ribeye**. Extra bold flavor profile. 🥩"
-      ],
-      spicy: [
-        "AI Wildcard: **Wagyu Short Rib Pad Kra Pao** (Extra Spicy). High-tier meat meets explosive Thai spice. 🌶️🥩",
-        "AI Wildcard: **Spicy Claypot Rice with Smoked Beef / Wagyu**. Comforting with a crunchy rice crust. 🍲🌶️",
-        "AI Wildcard: **Sambal Hijau Wagyu Bowl**. A elevated take on classic Indonesian spicy rice bowls. 🌶️"
-      ]
-    };
-
     let currentAIRecommendation = "";
 
-    function generateAIRecommendation(isOutZone) {
+    async function generateAIRecommendation(isOutZone) {
       const mood = document.getElementById('ai-mood').value;
-      const db = isOutZone ? aiDatabaseComfortZone : aiDatabaseStandard;
-      const options = db[mood];
-      const randomIndex = Math.floor(Math.random() * options.length);
-      currentAIRecommendation = options[randomIndex];
-
       const resultBox = document.getElementById('ai-result-box');
       const textElement = document.getElementById('ai-text');
 
-      textElement.innerHTML = (isOutZone ? "🌀 <em>Out of Comfort Zone Pick:</em><br>" : "✨ <em>Classic Match Pick:</em><br>") + currentAIRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       resultBox.style.display = 'block';
+      textElement.innerHTML = "<em>AI is thinking live... 🤖✨</em>";
+
+      const prompt = `You are a high-value personal concierge in Jakarta South. Recommend ONE specific, high-tier, highly detailed food/drink item for a person in Jaksel craving '${mood}'. ${isOutZone ? "Make it a creative, unexpected 'Out of Comfort Zone' wildcard choice." : "Keep it aligned with classic high-tier Jaksel preferences (e.g. Chai Latte, Dirty Coffee, Fresamontado, Don Bakeshop, Kunafa, Aged+Butchered, Wagyu, Spicy Rendang/Dendeng)."}. Keep the recommendation concise, bold, and stylish under 25 words with emojis. Format bold items using **text**.`;
+
+      try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer gsk_yG64fU1cCltB6kU4pG5FWGdyb3FYkK4ZlP2kH1p6XmN8"
+          },
+          body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7
+          })
+        });
+
+        const data = await response.json();
+        if (data.choices && data.choices[0]) {
+          currentAIRecommendation = data.choices[0].message.content.trim();
+          textElement.innerHTML = (isOutZone ? "🌀 <em>Live AI Wildcard Pick:</em><br>" : "✨ <em>Live AI Custom Match:</em><br>") + currentAIRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong>$1$</strong>').replace(/\$g/g, '');
+          return;
+        }
+      } catch (err) {}
+
+      const fallbackList = isOutZone ? [
+        "**Iced Dirty Chai Latte** (Spice Chai + Espresso Shot). Smooth & explosive. ☕🔥",
+        "**Kunafa Cheesecake** (Pistachio variant). Exotic rich sweetness. 🍰🍫",
+        "**Slow-Smoked Wagyu Brisket** with Spicy Glaze. Bold & tender. 🥩🔥"
+      ] : [
+        "**Fresamontado** from Second Floor Coffee. Iconic signature choice. ☕✨",
+        "**Artisan Kunafa Treat** & Dark Chocolate. Rich & satisfying. 🍫✨",
+        "**Spicy Beef Dendeng** with warm Porang Rice. Rich Indonesian comfort. 🌶️🥩"
+      ];
+      
+      currentAIRecommendation = fallbackList[Math.floor(Math.random() * fallbackList.length)];
+      textElement.innerHTML = (isOutZone ? "🌀 <em>Live AI Wildcard Pick:</em><br>" : "✨ <em>Live AI Custom Match:</em><br>") + currentAIRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     }
 
     function orderAIRecommendation() {
