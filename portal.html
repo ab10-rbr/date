@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Private Portal — Geni</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: rgba(22, 22, 26, 0.95);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --accent: #d4af37;
+      --accent-muted: rgba(212, 175, 55, 0.12);
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --glow: rgba(212, 175, 55, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--surface-border);
+      border-radius: 28px;
+      padding: 24px 20px 80px 20px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .greeting {
+      font-family: "Georgia", serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      padding: 6px;
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-item.active {
+      background: var(--accent-muted);
+      color: var(--accent);
+      font-weight: 600;
+      border: 1px solid var(--accent);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Agenda Input */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--accent);
+      background: var(--accent-muted);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .event-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    /* Energy Level Pills */
+    .energy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .energy-btn {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .energy-btn.selected {
+      background: var(--accent-muted);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Checklist */
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Emergency Button */
+    .btn-emergency {
+      background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="greeting">Private Portal</div>
+      <div class="subtitle">Binky Joint Companion</div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <div class="nav-item active" onclick="switchTab('tab-agenda')">Agenda</div>
+      <div class="nav-item" onclick="switchTab('tab-daily')">Daily</div>
+      <div class="nav-item" onclick="switchTab('tab-spotlight')">Spots</div>
+      <div class="nav-item" onclick="switchTab('tab-essentials')">Help</div>
+    </div>
+
+    <!-- TAB 1: AGENDA -->
+    <div id="tab-agenda" class="tab-content active">
+      <div class="card">
+        <div class="card-title">Add Upcoming Event</div>
+        <div class="input-group">
+          <input type="text" id="event-title" class="input-field" placeholder="Event title (e.g. Art Gallery)">
+          <input type="date" id="event-date" class="input-field">
+        </div>
+        <button class="btn-action" onclick="addEvent()">Save & Calendar 📅</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Upcoming Dates</div>
+        <div id="event-list">
+          <!-- Dynamic Items -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: DAILY -->
+    <div id="tab-daily" class="tab-content">
+      <div class="card">
+        <div class="card-title">Current Social Battery</div>
+        <div class="energy-grid">
+          <div class="energy-btn" onclick="setEnergy('Low / Rest Mode 🕯️')">Low Battery 🕯️</div>
+          <div class="energy-btn" onclick="setEnergy('Cozy / Lowkey ☕')">Cozy / Lowkey ☕</div>
+          <div class="energy-btn" onclick="setEnergy('Ready to Explore 🌆')">High Energy 🌆</div>
+          <div class="energy-btn" onclick="setEnergy('Overwhelmed 🕊️')">Need Space 🕊️</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Daily Essentials Checklist</div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox"> <span>Vitamins / Supplements 🌿</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox"> <span>Hydration Goal (2L Water) 💧</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox"> <span>Powerbank & AirPods Charged ⚡</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SPOTLIGHT & WISHLIST -->
+    <div id="tab-spotlight" class="tab-content">
+      <div class="card">
+        <div class="card-title">Saved Spots & Wishlist</div>
+        <div class="input-group">
+          <input type="text" id="spot-name" class="input-field" placeholder="Place or item name">
+          <input type="text" id="spot-link" class="input-field" placeholder="IG / TikTok / Web Link (Optional)">
+        </div>
+        <button class="btn-action" onclick="addSpot()">Add to List ✨</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Saved List</div>
+        <div id="spot-list">
+          <!-- Dynamic Spots -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: ESSENTIALS & EMERGENCY -->
+    <div id="tab-essentials" class="tab-content">
+      <div class="card">
+        <div class="card-title">Saved Preferences</div>
+        <div style="font-size:0.85rem; line-height:1.6; color:var(--text-dim);">
+          ☕ <strong>Coffee:</strong> Chai Latte / Single-Origin Kintamani<br>
+          🥐 <strong>Treat:</strong> Pastry / Porang Bowl<br>
+          🥩 <strong>Dining:</strong> Aged + Butchered / Bistecca
+        </div>
+      </div>
+
+      <button class="btn-emergency" onclick="sendEmergencyWA()">
+        "Pick Me Up" Coffee Run ☕🛵
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const PHONE_NUMBER = "6281298811308";
+
+    // Tab Switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // LocalStorage Operations
+    let events = JSON.parse(localStorage.getItem('portal_events')) || [
+      { title: 'August 25 Celebration Date', date: '2026-08-25' }
+    ];
+
+    let spots = JSON.parse(localStorage.getItem('portal_spots')) || [
+      { name: 'Aged + Butchered', link: '' }
+    ];
+
+    function renderEvents() {
+      const container = document.getElementById('event-list');
+      container.innerHTML = '';
+      events.forEach((ev, idx) => {
+        container.innerHTML += `
+          <div class="event-item">
+            <div>
+              <strong>${ev.title}</strong><br>
+              <small style="color:var(--accent);">${ev.date}</small>
+            </div>
+            <button onclick="downloadICS('${ev.title}', '${ev.date}')" style="background:none; border:none; color:var(--accent); cursor:pointer;">📅 Add</button>
+          </div>
+        `;
+      });
+    }
+
+    function addEvent() {
+      const title = document.getElementById('event-title').value.trim();
+      const date = document.getElementById('event-date').value;
+
+      if (title && date) {
+        events.push({ title, date });
+        localStorage.setItem('portal_events', JSON.stringify(events));
+        document.getElementById('event-title').value = '';
+        renderEvents();
+      }
+    }
+
+    function downloadICS(title, dateStr) {
+      const formattedDate = dateStr.replace(/-/g, '');
+      const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDTSTART:${formattedDate}T060000Z\nDTEND:${formattedDate}T140000Z\nEND:VEVENT\nEND:VCALENDAR`;
+      
+      const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', `${title}.ics`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function setEnergy(val) {
+      document.querySelectorAll('.energy-btn').forEach(btn => btn.classList.remove('selected'));
+      event.target.classList.add('selected');
+      alert(`Status updated to: ${val}`);
+    }
+
+    function toggleCheck(el) {
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+    }
+
+    function addSpot() {
+      const name = document.getElementById('spot-name').value.trim();
+      const link = document.getElementById('spot-link').value.trim();
+
+      if (name) {
+        spots.push({ name, link });
+        localStorage.setItem('portal_spots', JSON.stringify(spots));
+        document.getElementById('spot-name').value = '';
+        document.getElementById('spot-link').value = '';
+        renderSpots();
+      }
+    }
+
+    function renderSpots() {
+      const container = document.getElementById('spot-list');
+      container.innerHTML = '';
+      spots.forEach(sp => {
+        container.innerHTML += `
+          <div class="event-item">
+            <span>${sp.name}</span>
+            ${sp.link ? `<a href="${sp.link}" target="_blank" style="color:var(--accent);">View Link 🔗</a>` : ''}
+          </div>
+        `;
+      });
+    }
+
+    function sendEmergencyWA() {
+      const msg = `Hi! Need a quick coffee run / pick-me-up right now ☕✨`;
+      window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // Init
+    renderEvents();
+    renderSpots();
+  </script>
+</body>
+</html>
