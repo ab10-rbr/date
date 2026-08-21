@@ -305,6 +305,7 @@
       cursor: pointer;
     }
 
+    /* Swipeable Quote Box */
     .quote-box {
       text-align: center;
       padding: 32px 18px;
@@ -316,6 +317,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      touch-action: pan-y;
+      transition: transform 0.25s ease, opacity 0.25s ease;
     }
 
     .quote-text {
@@ -348,18 +351,24 @@
     .weather-temp { font-size: 1.45rem; font-weight: 700; color: var(--text); margin: 4px 0; }
     .weather-desc { font-size: 0.72rem; color: var(--accent); text-transform: capitalize; }
 
-    /* Clean Audiophile Minimalist Track List */
-    .track-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 4px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      font-size: 0.83rem;
+    .widget-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-    .track-row:last-child { border-bottom: none; }
-    .track-title { font-weight: 500; color: var(--text); }
-    .track-artist { font-size: 0.72rem; color: var(--text-dim); }
+    .widget-box {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.4) 100%);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .widget-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .widget-value { font-size: 1.3rem; font-weight: 700; color: var(--accent-light); }
   </style>
 </head>
 <body>
@@ -385,6 +394,17 @@
 
     <!-- TAB 1: AGENDA -->
     <div id="tab-agenda" class="tab-content active">
+      <div class="widget-container">
+        <div class="widget-box">
+          <div class="widget-label">⏳ Countdown</div>
+          <div class="widget-value" id="countdown-days">-- Days</div>
+        </div>
+        <div class="widget-box">
+          <div class="widget-label">🎯 Focus State</div>
+          <div class="widget-value" style="font-size: 1rem; color:var(--text);">It is done ✨</div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">✨ Add Upcoming Event</div>
         <div class="input-group">
@@ -471,35 +491,18 @@
     <!-- TAB 4: QUOTES & AMBIENT VIBES -->
     <div id="tab-quotes" class="tab-content">
       <div class="card">
-        <div class="card-title">🕯️ Daily Mindset & Reflection</div>
-        <div class="quote-box">
+        <div class="card-title">🕯️ Daily Mindset & Reflection <span style="font-size:0.65rem; color:var(--text-dim); margin-left:auto;">(Swipe Left/Right ↔️)</span></div>
+        <div class="quote-box" id="quote-card-box">
           <div class="quote-text" id="quote-display">"I'm interested in the truth. I'm not interested in the facade."</div>
           <div class="quote-author" id="author-display">— Cillian Murphy</div>
         </div>
         <button class="btn-action" style="margin-top:14px;" onclick="fetchNextQuote()">Next Quote 🔄</button>
       </div>
 
-      <!-- Clean Audiophile Rotation Widget -->
       <div class="card">
-        <div class="card-title">🎧 Current Rotation</div>
-        <div class="track-row">
-          <div>
-            <div class="track-title">From the Start</div>
-            <div class="track-artist">Laufey</div>
-          </div>
-          <div style="font-size:0.75rem; color:var(--accent);">Active</div>
-        </div>
-        <div class="track-row">
-          <div>
-            <div class="track-title">The Less I Know The Better</div>
-            <div class="track-artist">Tame Impala</div>
-          </div>
-        </div>
-        <div class="track-row">
-          <div>
-            <div class="track-title">Nightrider</div>
-            <div class="track-artist">Tom Misch</div>
-          </div>
+        <div class="card-title">🪄 Daily Intention Note</div>
+        <div class="input-group">
+          <textarea id="intention-input" class="input-field" rows="2" placeholder="Drop your intention or subconscious target here..." oninput="saveIntention()"></textarea>
         </div>
       </div>
     </div>
@@ -595,6 +598,34 @@
       timeStrEl.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    function updateCountdown() {
+      const targetDate = new Date('2026-08-25T00:00:00');
+      const now = new Date();
+      const diff = targetDate - now;
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      
+      const countdownEl = document.getElementById('countdown-days');
+      if (days > 0) {
+        countdownEl.innerText = `${days} Days`;
+      } else if (days === 0) {
+        countdownEl.innerText = `Today! 🎉`;
+      } else {
+        countdownEl.innerText = `Done ✨`;
+      }
+    }
+
+    function saveIntention() {
+      const val = document.getElementById('intention-input').value;
+      localStorage.setItem('portal_intention', val);
+    }
+
+    function loadIntention() {
+      const saved = localStorage.getItem('portal_intention');
+      if (saved) {
+        document.getElementById('intention-input').value = saved;
+      }
+    }
+
     let currentLat = -6.2615;
     let currentLong = 106.8106;
 
@@ -647,7 +678,6 @@
       return "Fair 🌤️";
     }
 
-    // 100% Authentic Clean Quotes Vault
     const quoteVault = [
       { q: "I'm interested in the truth. I'm not interested in the facade.", a: "Cillian Murphy" },
       { q: "You're not going to achieve anything unless you try to do something remarkable.", a: "Christopher Nolan" },
@@ -743,12 +773,46 @@
     ];
 
     function fetchNextQuote() {
-      const qText = document.getElementById('quote-display');
-      const qAuthor = document.getElementById('author-display');
+      const box = document.getElementById('quote-card-box');
+      box.style.opacity = '0';
+      box.style.transform = 'scale(0.97)';
 
-      const randomIndex = Math.floor(Math.random() * quoteVault.length);
-      qText.innerText = `"${quoteVault[randomIndex].q}"`;
-      qAuthor.innerText = `— ${quoteVault[randomIndex].a}`;
+      setTimeout(() => {
+        const qText = document.getElementById('quote-display');
+        const qAuthor = document.getElementById('author-display');
+
+        const randomIndex = Math.floor(Math.random() * quoteVault.length);
+        qText.innerText = `"${quoteVault[randomIndex].q}"`;
+        qAuthor.innerText = `— ${quoteVault[randomIndex].a}`;
+
+        box.style.opacity = '1';
+        box.style.transform = 'scale(1)';
+      }, 150);
+    }
+
+    // Swipe Touch Gesture Listeners
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const quoteBoxElement = document.getElementById('quote-card-box');
+    quoteBoxElement.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    quoteBoxElement.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, {passive: true});
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 40) {
+        // Swipe Left -> Next Quote
+        fetchNextQuote();
+      }
+      if (touchEndX > touchStartX + 40) {
+        // Swipe Right -> Next Quote
+        fetchNextQuote();
+      }
     }
 
     let currentAIRecommendation = "";
@@ -855,6 +919,7 @@
         localStorage.setItem('portal_events', JSON.stringify(events));
         document.getElementById('event-title').value = '';
         renderEvents();
+        updateCountdown();
       }
     }
 
@@ -862,6 +927,7 @@
       events.splice(index, 1);
       localStorage.setItem('portal_events', JSON.stringify(events));
       renderEvents();
+      updateCountdown();
     }
 
     function downloadICS(title, dateStr) {
@@ -957,6 +1023,8 @@
 
     // Init
     updateGreeting();
+    updateCountdown();
+    loadIntention();
     setInterval(updateGreeting, 60000);
     renderEvents();
     renderSpots();
