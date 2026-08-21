@@ -350,25 +350,6 @@
 
     .weather-temp { font-size: 1.45rem; font-weight: 700; color: var(--text); margin: 4px 0; }
     .weather-desc { font-size: 0.72rem; color: var(--accent); text-transform: capitalize; }
-
-    .widget-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .widget-box {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.4) 100%);
-      border: 1px solid var(--surface-border);
-      border-radius: 20px;
-      padding: 14px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .widget-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-    .widget-value { font-size: 1.3rem; font-weight: 700; color: var(--accent-light); }
   </style>
 </head>
 <body>
@@ -394,17 +375,6 @@
 
     <!-- TAB 1: AGENDA -->
     <div id="tab-agenda" class="tab-content active">
-      <div class="widget-container">
-        <div class="widget-box">
-          <div class="widget-label">⏳ Countdown</div>
-          <div class="widget-value" id="countdown-days">-- Days</div>
-        </div>
-        <div class="widget-box">
-          <div class="widget-label">🎯 Focus State</div>
-          <div class="widget-value" style="font-size: 1rem; color:var(--text);">It is done ✨</div>
-        </div>
-      </div>
-
       <div class="card">
         <div class="card-title">✨ Add Upcoming Event</div>
         <div class="input-group">
@@ -598,22 +568,6 @@
       timeStrEl.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    function updateCountdown() {
-      const targetDate = new Date('2026-08-25T00:00:00');
-      const now = new Date();
-      const diff = targetDate - now;
-      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-      
-      const countdownEl = document.getElementById('countdown-days');
-      if (days > 0) {
-        countdownEl.innerText = `${days} Days`;
-      } else if (days === 0) {
-        countdownEl.innerText = `Today! 🎉`;
-      } else {
-        countdownEl.innerText = `Done ✨`;
-      }
-    }
-
     function saveIntention() {
       const val = document.getElementById('intention-input').value;
       localStorage.setItem('portal_intention', val);
@@ -790,7 +744,6 @@
       }, 150);
     }
 
-    // Swipe Touch Gesture Listeners
     let touchStartX = 0;
     let touchEndX = 0;
 
@@ -805,12 +758,7 @@
     }, {passive: true});
 
     function handleSwipe() {
-      if (touchEndX < touchStartX - 40) {
-        // Swipe Left -> Next Quote
-        fetchNextQuote();
-      }
-      if (touchEndX > touchStartX + 40) {
-        // Swipe Right -> Next Quote
+      if (touchEndX < touchStartX - 40 || touchEndX > touchStartX + 40) {
         fetchNextQuote();
       }
     }
@@ -919,7 +867,6 @@
         localStorage.setItem('portal_events', JSON.stringify(events));
         document.getElementById('event-title').value = '';
         renderEvents();
-        updateCountdown();
       }
     }
 
@@ -927,7 +874,6 @@
       events.splice(index, 1);
       localStorage.setItem('portal_events', JSON.stringify(events));
       renderEvents();
-      updateCountdown();
     }
 
     function downloadICS(title, dateStr) {
@@ -1003,6 +949,10 @@
       }
     }
 
+    function toggleOtherTreatInput() {
+      toggleOtherInput();
+    }
+
     function sendSignal(customMsg) {
       const fullText = `Hi! Geni's Portal Vibe Update:\n\n${customMsg}`;
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(fullText)}`, '_blank');
@@ -1023,7 +973,6 @@
 
     // Init
     updateGreeting();
-    updateCountdown();
     loadIntention();
     setInterval(updateGreeting, 60000);
     renderEvents();
