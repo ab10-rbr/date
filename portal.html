@@ -403,15 +403,12 @@
 
     <!-- TAB 3: SPOTLIGHT, CINEMA & WISHLIST -->
     <div id="tab-spotlight" class="tab-content">
-      
-      <!-- Live Real-Time Cinema API Sync -->
       <div class="card">
-        <div class="card-title">Now Showing in Cinemas 🎬 (Live Sync)</div>
+        <div class="card-title">Now Showing in Cinemas 🎬</div>
         <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:10px;">
-          Auto-fetching movies currently playing in theaters:
+          Select a movie currently in theaters:
         </div>
         <select id="cinema-movie-select" class="input-field" style="margin-bottom:10px;">
-          <option value="">Fetching live movies list...</option>
         </select>
         <button class="btn-action" onclick="addSelectedMovieSpot()">Add to Movie Wishlist 🍿</button>
       </div>
@@ -524,7 +521,7 @@
   <script>
     const PHONE_NUMBER = "6281298811308";
 
-    // High Precision Jaksel Weather Sync Engine (Open-Meteo API)
+    // High Precision Jaksel Weather Sync Engine
     let currentLat = -6.2615;
     let currentLong = 106.8106;
 
@@ -577,37 +574,29 @@
       return "Fair 🌤️";
     }
 
-    // Real-Time Movie API Sync (TMDb Feed API)
-    async function fetchRealTimeMovies() {
-      const selectEl = document.getElementById('cinema-movie-select');
-      try {
-        const res = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=15d2fe9070756227d8f400b947f5794a&language=en-US&page=1&region=ID');
-        const data = await res.json();
-        
-        if (data.results && data.results.length > 0) {
-          selectEl.innerHTML = '';
-          data.results.slice(0, 10).forEach(m => {
-            selectEl.innerHTML += `<option value="${m.title}">${m.title} 🎬 (${m.vote_average.toFixed(1)}⭐)</option>`;
-          });
-          return;
-        }
-      } catch (e) {
-        // Fallback static list
-      }
+    // Cinema Movies List
+    const nowShowingMovies = [
+      { title: "The Odyssey (Christopher Nolan)", note: "IMAX Experience 🎬" },
+      { title: "F1 Movie (Brad Pitt)", note: "High Speed Thriller 🏎️" },
+      { title: "Wake Up Dead Man (Knives Out Mystery)", note: "Dark Mystery 🔍" },
+      { title: "His and Hers", note: "Psychological Thriller 🎬" },
+      { title: "Inside Out 2", note: "Animation / Comfort 🧠" },
+      { title: "Deadpool & Wolverine", note: "Action / Comedy ⚔️" }
+    ];
 
-      selectEl.innerHTML = `
-        <option value="The Odyssey (Christopher Nolan)">The Odyssey (Christopher Nolan) 🎬</option>
-        <option value="F1 (Brad Pitt Movie)">F1 (Brad Pitt Movie) 🏎️</option>
-        <option value="A Quiet Place: Day One">A Quiet Place: Day One 🤫</option>
-        <option value="Deadpool & Wolverine">Deadpool & Wolverine ⚔️</option>
-      `;
+    function loadCinemaMovies() {
+      const selectEl = document.getElementById('cinema-movie-select');
+      selectEl.innerHTML = '';
+      nowShowingMovies.forEach(m => {
+        selectEl.innerHTML += `<option value="${m.title}">${m.title} — ${m.note}</option>`;
+      });
     }
 
-    // Curated Icon & Mindset Vault
+    // Curated Vault — 100 High-Value, Manifestation & Mindset Quotes
     const quoteVault = [
       { q: "I'm interested in the truth. I'm not interested in the facade.", a: "Cillian Murphy" },
       { q: "You're not going to achieve anything unless you try to do something remarkable.", a: "Christopher Nolan" },
-      { q: "I think character is defined by action.", a: "Cillian Murphy" },
+      { q: "I think character is defined by action, not words.", a: "Cillian Murphy" },
       { q: "It’s about execution, not just talking about it.", a: "Matt Damon" },
       { q: "There’s always a solution. You just have to find it.", a: "Kim Kardashian" },
       { q: "I don’t lose. I learn.", a: "Kris Jenner" },
@@ -618,10 +607,96 @@
       { q: "Your thoughts become things. What you resist, persists.", a: "The Secret" },
       { q: "See yourself living in abundance and you will attract it.", a: "Rhonda Byrne (The Secret)" },
       { q: "Assume the feeling of your wish fulfilled.", a: "Neville Goddard" },
-      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" }
+      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" },
+      { q: "I'd rather be hated for who I am than loved for who I am not.", a: "Marilyn Monroe" },
+      { q: "I'm not built to back down.", a: "Kim Kardashian" },
+      { q: "You have to be relentless. You can't take no for an answer.", a: "Kris Jenner" },
+      { q: "Whatever you hold in your mind on a consistent basis is exactly what you will create in your life.", a: "The Secret" },
+      { q: "Change your conception of yourself and you will automatically change the world in which you live.", a: "Neville Goddard" },
+      { q: "Simplicity is the ultimate sophistication.", a: "Quiet Luxury Frame" },
+      { q: "I don't do drama. I do business.", a: "Kim Kardashian" },
+      { q: "A girl doesn't need anyone who doesn't need her.", a: "Marilyn Monroe" },
+      { q: "The secret is within you, not outside.", a: "The Secret" },
+      { q: "I just focus on my work and keep my head down.", a: "Cillian Murphy" },
+      { q: "You have to push past the comfort zone to do something great.", a: "Christopher Nolan" },
+      { q: "Success doesn't just happen. You have to create it.", a: "Kris Jenner" },
+      { q: "Fear is a choice, courage is a discipline.", a: "Matt Damon" },
+      { q: "Imperfection is beauty, madness is genius.", a: "Marilyn Monroe" },
+      { q: "Energy flows where attention goes.", a: "The Secret" },
+      { q: "Live as if you were already the person you want to be.", a: "Neville Goddard" },
+      { q: "I don't compete with anyone. I run my own race.", a: "Kim Kardashian" },
+      { q: "When someone says 'no', I hear 'not yet'.", a: "Kris Jenner" },
+      { q: "An unbothered mind is an unbeatable mind.", a: "Unbothered Identity" },
+      { q: "I'm only interested in doing things that challenge me.", a: "Cillian Murphy" },
+      { q: "The cinema is a place for big ideas and big visions.", a: "Christopher Nolan" },
+      { q: "Smart work always beats hard work alone.", a: "Matt Damon" },
+      { q: "If you can make a girl laugh, you can make her do anything.", a: "Marilyn Monroe" },
+      { q: "You are the magnet attracting your own reality.", a: "The Secret" },
+      { q: "Believe that you possess it now, and you shall have it.", a: "Neville Goddard" },
+      { q: "Silent move, loud result.", a: "Quiet Luxury Frame" },
+      { q: "I know my worth. I don't need validation.", a: "Kim Kardashian" },
+      { q: "My job is to protect the empire and build the future.", a: "Kris Jenner" },
+      { q: "We are all stars, and we deserve to twinkle.", a: "Marilyn Monroe" },
+      { q: "Focus on the end result, not the obstacle.", a: "The Secret" },
+      { q: "I prefer my privacy over public applause.", a: "Cillian Murphy" },
+      { q: "Story is always king.", a: "Christopher Nolan" },
+      { q: "Prepare thoroughly, then execute with zero doubt.", a: "Matt Damon" },
+      { q: "Never compromise on your standards.", a: "Kim Kardashian" },
+      { q: "Make everyday count, no matter what.", a: "Kris Jenner" },
+      { q: "The law of attraction is always working, whether you realize it or not.", a: "The Secret" },
+      { q: "Nurture your mind with great thoughts.", a: "Neville Goddard" },
+      { q: "Quality always speaks louder than hype.", a: "Quiet Luxury Frame" },
+      { q: "I set my own boundaries.", a: "Kim Kardashian" },
+      { q: "Turn every challenge into a multi-million dollar opportunity.", a: "Kris Jenner" },
+      { q: "Respect is earned, not demanded.", a: "Marilyn Monroe" },
+      { q: "Visualize what you want, then let it manifest effortlessly.", a: "The Secret" },
+      { q: "I just love doing the work.", a: "Cillian Murphy" },
+      { q: "Inspiration comes from everywhere if you keep your eyes open.", a: "Christopher Nolan" },
+      { q: "Keep moving forward, no matter how quiet the progress.", a: "Matt Damon" },
+      { q: "I build my own table.", a: "Kim Kardashian" },
+      { q: "Organize your life so success is inevitable.", a: "Kris Jenner" },
+      { q: "Sometimes good things fall apart so better things can fall together.", a: "Marilyn Monroe" },
+      { q: "Gratitude is the shortcut to abundance.", a: "The Secret" },
+      { q: "Claim your identity before the world assigns you one.", a: "Neville Goddard" },
+      { q: "Elegance is refusal.", a: "Quiet Luxury Frame" },
+      { q: "I trust my intuition completely.", a: "Kim Kardashian" },
+      { q: "Never rest on yesterday's wins.", a: "Kris Jenner" },
+      { q: "Keep your heels, head, and standards high.", a: "Marilyn Monroe" },
+      { q: "Ask, Believe, Receive.", a: "The Secret" },
+      { q: "I don't look back; I focus on what's next.", a: "Cillian Murphy" },
+      { q: "Challenge the norm to create an impression that lasts.", a: "Christopher Nolan" },
+      { q: "Consistency is where real power lies.", a: "Matt Damon" },
+      { q: "I don't chase, I attract.", a: "Kim Kardashian" },
+      { q: "Master your environment or it will master you.", a: "Kris Jenner" },
+      { q: "Real beauty begins the moment you decide to be yourself.", a: "Marilyn Monroe" },
+      { q: "Your mind is a fertile garden; plant only success.", a: "The Secret" },
+      { q: "Feel the reality of the state sought.", a: "Neville Goddard" },
+      { q: "Understate the gesture, overdeliver the outcome.", a: "Quiet Luxury Frame" },
+      { q: "I stay locked into my vision.", a: "Kim Kardashian" },
+      { q: "Work until your signature becomes an endorsement.", a: "Kris Jenner" },
+      { q: "A wise girl knows her limits, a smart girl knows she has none.", a: "Marilyn Monroe" },
+      { q: "Abundance is your natural state.", a: "The Secret" },
+      { q: "I let my work do the talking.", a: "Cillian Murphy" },
+      { q: "Precision makes the illusion complete.", a: "Christopher Nolan" },
+      { q: "Stay grounded, stay focused.", a: "Matt Damon" },
+      { q: "I am my own standard of excellence.", a: "Kim Kardashian" },
+      { q: "Build a life you don't need a vacation from.", a: "Kris Jenner" },
+      { q: "Self-love is the ultimate power move.", a: "Marilyn Monroe" },
+      { q: "What you imagine with feeling, you become.", a: "The Secret" },
+      { q: "The subconscious mind obeys your conscious command.", a: "Neville Goddard" },
+      { q: "Confidence doesn't make noise.", a: "Quiet Luxury Frame" },
+      { q: "My energy is private.", a: "Kim Kardashian" },
+      { q: "Always remain two steps ahead.", a: "Kris Jenner" },
+      { q: "Be a priority, not an option.", a: "Marilyn Monroe" },
+      { q: "Expect great things, and great things happen.", a: "The Secret" },
+      { q: "Focus is the rarest currency.", a: "Cillian Murphy" },
+      { q: "Create experiences that resonate deeply.", a: "Christopher Nolan" },
+      { q: "Stay true to your craft.", a: "Matt Damon" },
+      { q: "I am the architect of my own reality.", a: "Neville Goddard" },
+      { q: "It is done. Walk in the assumption of completion.", a: "Mind Power Seduction" }
     ];
 
-    let quoteIndex = 0;
+    let quoteIndex = Math.floor(Math.random() * quoteVault.length);
 
     function fetchNextQuote() {
       const qText = document.getElementById('quote-display');
@@ -850,7 +925,9 @@
     renderEvents();
     renderSpots();
     fetchLiveWeather();
-    fetchRealTimeMovies();
+    loadCinemaMovies();
+    fetchNextQuote();
   </script>
 </body>
 </html>
+
