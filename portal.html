@@ -401,16 +401,20 @@
       </div>
     </div>
 
-    <!-- TAB 3: SPOTLIGHT, CINEMA & WISHLIST -->
+    <!-- TAB 3: SPOTLIGHT, MOVIE PLANNER & WISHLIST -->
     <div id="tab-spotlight" class="tab-content">
+      
+      <!-- Open Movie Planner -->
       <div class="card">
-        <div class="card-title">Now Showing in Cinemas 🎬</div>
-        <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:10px;">
-          Select a movie currently in theaters:
+        <div class="card-title">What movie do you want to watch today? 🎬</div>
+        <div class="input-group">
+          <input type="text" id="custom-movie-input" class="input-field" placeholder="Enter movie title (e.g. Oppenheimer)...">
+          <select id="movie-venue-select" class="input-field">
+            <option value="In Theater 🍿">In Theater 🍿</option>
+            <option value="Cozy Night at Home 🏠">Cozy Night at Home 🏠</option>
+          </select>
         </div>
-        <select id="cinema-movie-select" class="input-field" style="margin-bottom:10px;">
-        </select>
-        <button class="btn-action" onclick="addSelectedMovieSpot()">Add to Movie Wishlist 🍿</button>
+        <button class="btn-action" onclick="addCustomMoviePlan()">Add Movie Idea 🍿</button>
       </div>
 
       <div class="card">
@@ -574,25 +578,7 @@
       return "Fair 🌤️";
     }
 
-    // Cinema Movies List
-    const nowShowingMovies = [
-      { title: "The Odyssey (Christopher Nolan)", note: "IMAX Experience 🎬" },
-      { title: "F1 Movie (Brad Pitt)", note: "High Speed Thriller 🏎️" },
-      { title: "Wake Up Dead Man (Knives Out Mystery)", note: "Dark Mystery 🔍" },
-      { title: "His and Hers", note: "Psychological Thriller 🎬" },
-      { title: "Inside Out 2", note: "Animation / Comfort 🧠" },
-      { title: "Deadpool & Wolverine", note: "Action / Comedy ⚔️" }
-    ];
-
-    function loadCinemaMovies() {
-      const selectEl = document.getElementById('cinema-movie-select');
-      selectEl.innerHTML = '';
-      nowShowingMovies.forEach(m => {
-        selectEl.innerHTML += `<option value="${m.title}">${m.title} — ${m.note}</option>`;
-      });
-    }
-
-    // Curated Vault — 100 High-Value, Manifestation & Mindset Quotes
+    // Full 100 Quotes Vault (Guaranteed Unfiltered 100 Array)
     const quoteVault = [
       { q: "I'm interested in the truth. I'm not interested in the facade.", a: "Cillian Murphy" },
       { q: "You're not going to achieve anything unless you try to do something remarkable.", a: "Christopher Nolan" },
@@ -647,7 +633,7 @@
       { q: "Nurture your mind with great thoughts.", a: "Neville Goddard" },
       { q: "Quality always speaks louder than hype.", a: "Quiet Luxury Frame" },
       { q: "I set my own boundaries.", a: "Kim Kardashian" },
-      { q: "Turn every challenge into a multi-million dollar opportunity.", a: "Kris Jenner" },
+      { q: "Turn every challenge into an opportunity.", a: "Kris Jenner" },
       { q: "Respect is earned, not demanded.", a: "Marilyn Monroe" },
       { q: "Visualize what you want, then let it manifest effortlessly.", a: "The Secret" },
       { q: "I just love doing the work.", a: "Cillian Murphy" },
@@ -696,15 +682,14 @@
       { q: "It is done. Walk in the assumption of completion.", a: "Mind Power Seduction" }
     ];
 
-    let quoteIndex = Math.floor(Math.random() * quoteVault.length);
-
     function fetchNextQuote() {
       const qText = document.getElementById('quote-display');
       const qAuthor = document.getElementById('author-display');
 
-      quoteIndex = (quoteIndex + 1) % quoteVault.length;
-      qText.innerText = `"${quoteVault[quoteIndex].q}"`;
-      qAuthor.innerText = `— ${quoteVault[quoteIndex].a}`;
+      // Random selection across all 100 quotes
+      const randomIndex = Math.floor(Math.random() * quoteVault.length);
+      qText.innerText = `"${quoteVault[randomIndex].q}"`;
+      qAuthor.innerText = `— ${quoteVault[randomIndex].a}`;
     }
 
     // AI Database
@@ -859,13 +844,16 @@
       }
     }
 
-    function addSelectedMovieSpot() {
-      const selectedMovie = document.getElementById('cinema-movie-select').value;
-      if (selectedMovie) {
-        spots.push({ name: `Cinema Date: ${selectedMovie}`, link: '' });
+    function addCustomMoviePlan() {
+      const title = document.getElementById('custom-movie-input').value.trim();
+      const venue = document.getElementById('movie-venue-select').value;
+
+      if (title) {
+        spots.push({ name: `Movie Date: ${title} (${venue})`, link: '' });
         localStorage.setItem('portal_spots', JSON.stringify(spots));
+        document.getElementById('custom-movie-input').value = '';
         renderSpots();
-        alert(`Added "${selectedMovie}" to Movie Wishlist! 🍿`);
+        alert(`Added "${title}" (${venue}) to Movie Wishlist! 🍿`);
       }
     }
 
@@ -925,9 +913,7 @@
     renderEvents();
     renderSpots();
     fetchLiveWeather();
-    loadCinemaMovies();
     fetchNextQuote();
   </script>
 </body>
 </html>
-
