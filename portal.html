@@ -440,8 +440,8 @@
       <div class="card">
         <div class="card-title">Daily Mindset & Reflection 🕯️</div>
         <div class="quote-box">
-          <div class="quote-text" id="quote-display">"Assume the feeling of your wish fulfilled."</div>
-          <div class="quote-author" id="author-display">— Neville Goddard</div>
+          <div class="quote-text" id="quote-display">"I'm interested in the truth. I'm not interested in the facade."</div>
+          <div class="quote-author" id="author-display">— Cillian Murphy</div>
         </div>
         <button class="btn-action" style="margin-top:14px;" onclick="fetchNextQuote()">Next Quote 🔄</button>
       </div>
@@ -529,7 +529,6 @@
     const PHONE_NUMBER = "6281298811308";
 
     // High Precision Jaksel Weather Sync Engine (Open-Meteo API)
-    // Jaksel Lat: -6.2615, Long: 106.8106
     let currentLat = -6.2615;
     let currentLong = 106.8106;
 
@@ -582,30 +581,29 @@
       return "Fair 🌤️";
     }
 
-    // Quote Engine
+    // Curated Icon & Mindset Vault
     const quoteVault = [
+      { q: "I'm interested in the truth. I'm not interested in the facade.", a: "Cillian Murphy" },
+      { q: "You're not going to achieve anything unless you try to do something remarkable.", a: "Christopher Nolan" },
+      { q: "I think character is defined by action.", a: "Cillian Murphy" },
+      { q: "It’s about execution, not just talking about it.", a: "Matt Damon" },
+      { q: "There’s always a solution. You just have to find it.", a: "Kim Kardashian" },
+      { q: "I don’t lose. I learn.", a: "Kris Jenner" },
+      { q: "If somebody tells you 'no', you're talking to the wrong person.", a: "Kris Jenner" },
+      { q: "Find what you're passionate about and make it your life.", a: "Kim Kardashian" },
+      { q: "Give a girl the right shoes, and she can conquer the world.", a: "Marilyn Monroe" },
+      { q: "Wanting to be someone else is a waste of the person you are.", a: "Marilyn Monroe" },
+      { q: "Your thoughts become things. What you resist, persists.", a: "The Secret" },
+      { q: "See yourself living in abundance and you will attract it.", a: "Rhonda Byrne (The Secret)" },
       { q: "Assume the feeling of your wish fulfilled.", a: "Neville Goddard" },
-      { q: "Change your conception of yourself and you will automatically change the world in which you live.", a: "Neville Goddard" },
-      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" },
-      { q: "Operate from an unbothered identity. Silent power speaks the loudest.", a: "Quiet Luxury Frame" },
-      { q: "Confidence is not 'they will like me'. Confidence is 'I'll be fine if they don't'.", a: "Self Concept" }
+      { q: "It is done. Everything is already taken care of.", a: "Mind Power Seduction" }
     ];
 
     let quoteIndex = 0;
 
-    async function fetchNextQuote() {
+    function fetchNextQuote() {
       const qText = document.getElementById('quote-display');
       const qAuthor = document.getElementById('author-display');
-
-      try {
-        const response = await fetch('https://api.quotable.io/random');
-        if (response.ok) {
-          const data = await response.json();
-          qText.innerText = `"${data.content}"`;
-          qAuthor.innerText = `— ${data.author}`;
-          return;
-        }
-      } catch (e) {}
 
       quoteIndex = (quoteIndex + 1) % quoteVault.length;
       qText.innerText = `"${quoteVault[quoteIndex].q}"`;
