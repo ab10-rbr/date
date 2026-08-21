@@ -396,7 +396,7 @@
           <input type="checkbox"> <span>Hydration Goal (2L Water) 💧</span>
         </label>
         <label class="check-item">
-          <input type="checkbox"> <span>Powerbank & AirPods Charged ⚡</span>
+          <input type="checkbox"> <span>Powerbank & Bose TWS Charged 🎧⚡</span>
         </label>
       </div>
     </div>
@@ -404,18 +404,14 @@
     <!-- TAB 3: SPOTLIGHT, CINEMA & WISHLIST -->
     <div id="tab-spotlight" class="tab-content">
       
-      <!-- Cinema Now Showing Picker -->
+      <!-- Live Real-Time Cinema API Sync -->
       <div class="card">
-        <div class="card-title">Now Showing in Cinemas 🎬</div>
+        <div class="card-title">Now Showing in Cinemas 🎬 (Live Sync)</div>
         <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:10px;">
-          Pick a movie currently playing to add to your date wishlist:
+          Auto-fetching movies currently playing in theaters:
         </div>
         <select id="cinema-movie-select" class="input-field" style="margin-bottom:10px;">
-          <option value="The Odyssey (Christopher Nolan)">The Odyssey (Christopher Nolan) 🎬</option>
-          <option value="F1 (Brad Pitt Movie)">F1 (Brad Pitt Movie) 🏎️</option>
-          <option value="A Quiet Place: Day One">A Quiet Place: Day One 🤫</option>
-          <option value="Deadpool & Wolverine">Deadpool & Wolverine ⚔️</option>
-          <option value="Inside Out 2">Inside Out 2 🧠</option>
+          <option value="">Fetching live movies list...</option>
         </select>
         <button class="btn-action" onclick="addSelectedMovieSpot()">Add to Movie Wishlist 🍿</button>
       </div>
@@ -579,6 +575,32 @@
       if (code >= 51 && code <= 67) return "Light Rain 🌧️";
       if (code >= 80 && code <= 99) return "Heavy Rain / Storm ⛈️";
       return "Fair 🌤️";
+    }
+
+    // Real-Time Movie API Sync (TMDb Feed API)
+    async function fetchRealTimeMovies() {
+      const selectEl = document.getElementById('cinema-movie-select');
+      try {
+        const res = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=15d2fe9070756227d8f400b947f5794a&language=en-US&page=1&region=ID');
+        const data = await res.json();
+        
+        if (data.results && data.results.length > 0) {
+          selectEl.innerHTML = '';
+          data.results.slice(0, 10).forEach(m => {
+            selectEl.innerHTML += `<option value="${m.title}">${m.title} 🎬 (${m.vote_average.toFixed(1)}⭐)</option>`;
+          });
+          return;
+        }
+      } catch (e) {
+        // Fallback static list
+      }
+
+      selectEl.innerHTML = `
+        <option value="The Odyssey (Christopher Nolan)">The Odyssey (Christopher Nolan) 🎬</option>
+        <option value="F1 (Brad Pitt Movie)">F1 (Brad Pitt Movie) 🏎️</option>
+        <option value="A Quiet Place: Day One">A Quiet Place: Day One 🤫</option>
+        <option value="Deadpool & Wolverine">Deadpool & Wolverine ⚔️</option>
+      `;
     }
 
     // Curated Icon & Mindset Vault
@@ -764,10 +786,12 @@
 
     function addSelectedMovieSpot() {
       const selectedMovie = document.getElementById('cinema-movie-select').value;
-      spots.push({ name: `Cinema Date: ${selectedMovie}`, link: '' });
-      localStorage.setItem('portal_spots', JSON.stringify(spots));
-      renderSpots();
-      alert(`Added "${selectedMovie}" to Movie Wishlist! 🍿`);
+      if (selectedMovie) {
+        spots.push({ name: `Cinema Date: ${selectedMovie}`, link: '' });
+        localStorage.setItem('portal_spots', JSON.stringify(spots));
+        renderSpots();
+        alert(`Added "${selectedMovie}" to Movie Wishlist! 🍿`);
+      }
     }
 
     function deleteSpot(index) {
@@ -826,6 +850,7 @@
     renderEvents();
     renderSpots();
     fetchLiveWeather();
+    fetchRealTimeMovies();
   </script>
 </body>
 </html>
